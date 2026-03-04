@@ -4,6 +4,7 @@ import { join, resolve, extname } from 'path';
 
 const MIME_TYPES = {
   '.js':   'application/javascript',
+  '.mjs':  'application/javascript',
   '.css':  'text/css',
   '.wasm': 'application/wasm',
   '.json': 'application/json',

@@ -10,11 +10,15 @@
     <script type="module" src="/pyscript/core.js"></script>
     <!-- Tell PyScript to use the locally served Pyodide instead of fetching from CDN -->
     <py-config>
-      interpreter = "/pyodide/pyodide.js"
+      interpreter = "/pyodide/pyodide.mjs"
     </py-config>
   </head>
   <body>
     <div id="app"></div>
+    <py-terminal></py-terminal>
     <script type="module" src="/src/main.js"></script>
+    <script type="py">
+      print("Hello, World!")
+    </script>
   </body>
 </html>
