@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>algo-visualizer</title>
+    <!-- PyScript: served locally from node_modules via vite-plugin-static-copy -->
+    <link rel="stylesheet" href="/pyscript/core.css" />
+    <script type="module" src="/pyscript/core.js"></script>
+    <!-- Tell PyScript to use the locally served Pyodide instead of fetching from CDN -->
+    <py-config>
+      interpreter = "/pyodide/pyodide.js"
+    </py-config>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
