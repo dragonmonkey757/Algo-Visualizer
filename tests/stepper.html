@@ -2,21 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>algo-visualizer</title>
+    <title>Stepper Test</title>
     <link rel="stylesheet" href="/pyscript/core.css" />
     <script type="module" src="/pyscript/core.js"></script>
     <py-config>
-      interpreter = "/pyodide/pyodide.mjs"
+      packages = ["numpy"]
+      [[fetch]]
+      from = "/stepper"
+      files = ["stepper.py", "default.py"]
     </py-config>
   </head>
   <body>
-    <div id="app"></div>
     <py-terminal></py-terminal>
-    <script type="module" src="/src/main.js"></script>
+    <script src="/stepper/stepper.js"></script>
     <script type="py">
-      print("Hello, World!")
+      from default import entry_point
+      entry_point()
     </script>
   </body>
 </html>
