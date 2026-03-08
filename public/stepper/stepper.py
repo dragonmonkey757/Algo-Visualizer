@@ -1,4 +1,6 @@
 import numpy as np
+from js import console
+from pyodide.ffi import to_js
 
 class ArrayMonitor:
     def __init__(self, array):
@@ -8,8 +10,8 @@ class ArrayMonitor:
         self.update()
 
     def update(self):
-        # Probably will handle highlighted indices in the javascript version
-        print(self.array)
+        js_array = to_js(self.array.tolist())
+        console.log(js_array)
 
     def __getitem__(self, key):
         return self.array[key]
