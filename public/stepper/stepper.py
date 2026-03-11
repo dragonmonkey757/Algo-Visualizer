@@ -3,17 +3,26 @@ from js import console
 from pyodide.ffi import to_js
 
 class ArrayMonitor:
-    def __init__(self, array):
+    def __init__(self, array, auto_highlight=True):
         self.array = array
         self.highlighted_indices = set()
-        self.steps = 0
+        self.side_elements = [] #temporary elements like keys in insertion sort
+        self.auto_highlight = auto_highlight  # Enable/disable auto-highlighting
         self.update()
 
     def update(self):
-        js_array = to_js(self.array.tolist())
-        console.log(js_array)
+        # Send the array, side elements, and highlighted indices to JS as a dict
+        data = {
+            'array': self.array.tolist(),
+            'side_elements': self.side_elements,
+            'highlights': list(self.highlighted_indices)
+        }
+        console.log(to_js(data))
 
     def __getitem__(self, key):
+        if self.auto_highlight:
+            self.highlighted_indices.add(key)  # Auto-highlight on access
+            self.update()
         return self.array[key]
 
     def __len__(self):
@@ -21,18 +30,19 @@ class ArrayMonitor:
 
     def __setitem__(self, key, value):
         self.array[key] = value
-        self.steps += 1
+        if self.auto_highlight:
+            self.highlighted_indices.add(key)  # Auto-highlight on modification
         self.update()
 
     def __str__(self):
         return str(self.array)
 
-    def compare(self, i, j):
-        self.highlighted_indices = {i, j}
-        self.update()
-        return self.array[i] <= self.array[j]
-
     def highlight(self, *indices):
         self.highlighted_indices = set(indices)
+        self.update()
+
+    # New method to clear highlights
+    def clear_highlight(self):
+        self.highlighted_indices.clear()
         self.update()
 

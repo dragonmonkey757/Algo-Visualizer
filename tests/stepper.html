@@ -10,15 +10,13 @@
       packages = ["numpy"]
       [[fetch]]
       from = "/stepper"
-      files = ["stepper.py", "default.py"]
+      files = ["stepper.py", "default.py", "firstload.py"]
     </py-config>
+    <script src="/stepper/stepper.js"></script>
   </head>
   <body>
+    <button onclick="setupStepper([5, 2, 9, 1, 5, 6])">Run Stepper</button>
     <py-terminal></py-terminal>
-    <script src="/stepper/stepper.js"></script>
-    <script type="py">
-      from default import entry_point
-      entry_point()
-    </script>
+    <script type="py" src="/stepper/firstload.py"></script>
   </body>
 </html>
