@@ -1,21 +1,20 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>algo-visualizer</title>
-    <link rel="stylesheet" href="/pyscript/core.css" />
-    <script type="module" src="/pyscript/core.js"></script>
-    <py-config>
-    </py-config>
-  </head>
-  <body>
-    <div id="app"></div>
-    <py-terminal></py-terminal>
-    <script type="module" src="/src/main.js"></script>
-    <script type="py">
-      print("Hello, World!")
-    </script>
-  </body>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Algorithm Visualizer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<h2>Bubble Sort Visualizer</h2>
+
+<canvas id="chart"></canvas>
+
+<br>
+<button id="startBtn">Start Sort</button>
+
+<script type="module" src="/src/test.js"></script>
+
+</body>
 </html>
