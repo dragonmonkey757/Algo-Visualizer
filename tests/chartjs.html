@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Algorithm Visualizer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <link rel="stylesheet" href="/pyscript/core.css" />
+    <script type="module" src="/pyscript/core.js"></script>
+    <py-config>
+      packages = ["numpy"]
+      [[fetch]]
+      from = "/stepper"
+      files = ["stepper.py", "default.py", "firstload.py"]
+    </py-config>
+  <link rel="stylesheet" href="/chart/sidecontent.css" />
+  <link rel="stylesheet" href="/chart/mainpage.css" />
+</head>
+
+<body>
+
+<div id="mainContent">
+  <h2>Visualizer</h2>
+  <py-terminal></py-terminal>
+  <script type="py" src="/stepper/firstload.py"></script>
+  <canvas id="chart"></canvas>
+
+  <br>
+  <button id="startBtn">Start Sort</button>
+</div>
+
+<div id="sidePanel">
+  <h3>Side Elements</h3>
+  <div id="sideElementsContainer"></div>
+</div>
+
+<script type="module" src="/stepper/stepper.js"></script>
+
+</body>
+</html>
