@@ -1,18 +1,63 @@
-* {
+/* Reset */
+body {
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  background: #1e1e1e;
 }
 
-body, html {
-  height: 100%;
-  width: 100%;
-}
-#editor {
+/* App layout */
+.app {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
+}
+
+/* Top bar */
+.toolbar {
+  position: fixed;
+  top: 0;              /* stick top */
+  left: 75%;              /* move to middle horizontally */
+  transform: translateX(-50%); /* perfectly center */
+
+  background: #2d2d2d;
+  padding: 10px;
+  border-bottom: 1px solid #444;
+}
+
+/* Button styling */
+#playBtn {
+
+  background: rgb(28, 147, 173);
+  border: none;
+  padding: 8px 16px;
+  color: white;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#playBtn:hover {
+  background: rgb(28, 147, 173);
+}
+
+/* Main area */
+.main {
+  flex: 1;
+  display: flex;
+}
+
+/* Editor fills space */
+#editor {
+  flex: 1;
+}
+
+#editor {
   width: 50%;
 }
 
-.cm-editor {
-  height: 100vh;
+#output {
+  width: 50%;
+  background: #111;
+  color: rgb(28, 147, 173);
+  border-left: 1px solid #444;
 }
