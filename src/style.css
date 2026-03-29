@@ -46,13 +46,37 @@ body {
   color: #f7fbff;
 }
 
-#playBtn {
+.toolbar button {
   border: none;
   padding: 9px 14px;
   color: white;
   border-radius: 8px;
   cursor: pointer;
+}
+
+#playBtn {
   background: linear-gradient(120deg, #0f75a8, #1b9f85);
+}
+
+#templateBtn {
+  background: linear-gradient(120deg, #35517f, #4d6ca8);
+}
+
+#pauseBtn {
+  background: linear-gradient(120deg, #88620d, #c08512);
+}
+
+#resumeBtn {
+  background: linear-gradient(120deg, #14653f, #1b9f85);
+}
+
+#stopBtn {
+  background: linear-gradient(120deg, #7e1d1d, #c53939);
+}
+
+.toolbar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .main {
