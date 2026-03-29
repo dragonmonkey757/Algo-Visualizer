@@ -1,18 +1,86 @@
 from stepper import ArrayMonitor
 import asyncio
 import numpy as np
+import time
 
 STEP_DELAY_SECONDS = 0.75
+
+class StepperStoppedError(RuntimeError):
+    pass
+
+class StepperLimitError(RuntimeError):
+    pass
+
+class RuntimeControl:
+    def __init__(self):
+        self.reset(2500, 12.0)
+
+    def reset(self, max_steps, max_seconds):
+        self.max_steps = max(1, int(max_steps))
+        self.max_seconds = max(0.25, float(max_seconds))
+        self.started_at = time.monotonic()
+        self.step_count = 0
+        self.paused = False
+        self.stopped = False
+
+    def _validate_limits(self):
+        if (time.monotonic() - self.started_at) > self.max_seconds:
+            raise StepperLimitError(
+                f"Execution timed out after {self.max_seconds:.1f}s."
+            )
+
+    def check_sync(self, step_increment=0):
+        if self.stopped:
+            raise StepperStoppedError("Execution stopped by user.")
+        if step_increment:
+            self.step_count += int(step_increment)
+            if self.step_count > self.max_steps:
+                raise StepperLimitError(
+                    f"Step limit exceeded ({self.max_steps})."
+                )
+        self._validate_limits()
+
+    async def checkpoint(self, step_increment=0):
+        self.check_sync(step_increment)
+        while self.paused:
+            if self.stopped:
+                raise StepperStoppedError("Execution stopped by user.")
+            self._validate_limits()
+            await asyncio.sleep(0.05)
+
+CONTROL = RuntimeControl()
+
+def pause_stepper():
+    CONTROL.paused = True
+
+def resume_stepper():
+    CONTROL.paused = False
+
+def stop_stepper():
+    CONTROL.stopped = True
+    CONTROL.paused = False
+
+async def controlled_sleep(seconds):
+    remaining = max(0.0, float(seconds))
+    while remaining > 0:
+        await CONTROL.checkpoint()
+        slice_duration = min(0.05, remaining)
+        await asyncio.sleep(slice_duration)
+        remaining -= slice_duration
 
 # Async sleep must be used here, otherwise the main browser thread will be blocked
 # https://github.com/pyscript/pyscript/issues/324
 
-async def entry_point(arr, user_code=""):
-    monitored_arr = ArrayMonitor(np.array(arr))
-    if user_code and user_code.strip():
-        await run_user_algorithm(monitored_arr, user_code)
-    else:
-        await insertion_sort(monitored_arr)
+async def entry_point(arr, user_code="", max_steps=2500, max_seconds=12.0):
+    CONTROL.reset(max_steps, max_seconds)
+    monitored_arr = ArrayMonitor(np.array(arr), CONTROL)
+    try:
+        if user_code and user_code.strip():
+            await run_user_algorithm(monitored_arr, user_code)
+        else:
+            await insertion_sort(monitored_arr)
+    finally:
+        CONTROL.paused = False
 
 async def run_user_algorithm(arr, user_code):
     namespace = {}
@@ -23,8 +91,12 @@ async def run_user_algorithm(arr, user_code):
         raise ValueError("Define a function named 'algorithm(arr)' or 'sort(arr)' in the editor.")
 
     result = algorithm(arr)
-    if asyncio.iscoroutine(result):
-        await result
+    if not asyncio.iscoroutine(result):
+        raise ValueError(
+            "Custom algorithms must be async. Use 'async def algorithm(arr):' and 'await arr.step(...)' in loops."
+        )
+
+    await asyncio.wait_for(result, timeout=CONTROL.max_seconds)
 
     arr.highlighted_indices.clear()
     arr.side_elements = []
@@ -32,33 +104,36 @@ async def run_user_algorithm(arr, user_code):
 
 async def insertion_sort(arr):
     for i in range(1, len(arr)):
+        await CONTROL.checkpoint()
         key = arr[i]
         arr.highlighted_indices = {i: "red"}  
         arr.side_elements = [["key", key, "red"]]
         await arr.update()
-        await asyncio.sleep(STEP_DELAY_SECONDS)
+        await controlled_sleep(STEP_DELAY_SECONDS)
         j = i - 1
         while j >= 0 and arr[j] > key:
+            await CONTROL.checkpoint()
             arr.highlighted_indices = {i: "red", j: "orange", j + 1: "orange"}
             arr.side_elements = [["key", key, "red"], ["shifting", arr[j], "purple"]]
             await arr.update()
             arr[j + 1] = arr[j]
             j -= 1
-            await asyncio.sleep(STEP_DELAY_SECONDS)
+            await controlled_sleep(STEP_DELAY_SECONDS)
         arr[j + 1] = key
-        await asyncio.sleep(STEP_DELAY_SECONDS)
+        await controlled_sleep(STEP_DELAY_SECONDS)
         arr.highlighted_indices.clear() 
         arr.side_elements = [] 
         await arr.update()
-        await asyncio.sleep(STEP_DELAY_SECONDS)
+        await controlled_sleep(STEP_DELAY_SECONDS)
 
 async def bubble_sort(arr):
     n = len(arr)
     for i in range(n):
         for j in range(0, n-i-1):
+            await CONTROL.checkpoint()
             if arr[j] > arr[j+1]:
                 arr[j], arr[j+1] = arr[j+1], arr[j]
                 await arr.update()
-                await asyncio.sleep(STEP_DELAY_SECONDS)
+                await controlled_sleep(STEP_DELAY_SECONDS)
 
                 
