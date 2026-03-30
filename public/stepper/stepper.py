@@ -1,12 +1,12 @@
-import numpy as np
 from js import console
 from pyodide.ffi import to_js
+
 
 class ArrayMonitor:
     def __init__(self, array, auto_highlight=True):
         self.array = array
         self.highlighted_indices = set()
-        self.side_elements = [] #temporary elements like keys in insertion sort
+        self.side_elements = []   # temporary elements like keys in insertion sort
         self.auto_highlight = auto_highlight  # Enable/disable auto-highlighting
         self.update()
 
@@ -45,4 +45,3 @@ class ArrayMonitor:
     def clear_highlight(self):
         self.highlighted_indices.clear()
         self.update()
-

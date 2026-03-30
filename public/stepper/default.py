@@ -1,9 +1,11 @@
 from stepper import ArrayMonitor
 import numpy as np
 
+
 def entry_point(arr):
     monitored_arr = ArrayMonitor(np.array(arr))
     insertion_sort(monitored_arr)
+
 
 def insertion_sort(arr):
     for i in range(1, len(arr)):
