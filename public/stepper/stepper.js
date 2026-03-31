@@ -1,15 +1,16 @@
+/* global Chart */
 const data = Array.from({length: 20}, () => Math.floor(Math.random() * 100));
 
-const ctx = document.getElementById('chart').getContext('2d');
+const ctx = document.getElementById("chart").getContext("2d");
 const chart = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
         labels: data.map((_, i) => i),
         datasets: [{
-            label: 'Values',
+            label: "Values",
             data: [...data],
-            backgroundColor: 'rgba(54, 162, 235, 0.7)',
-            borderColor: 'rgba(54, 162, 235, 1)',
+            backgroundColor: "rgba(54, 162, 235, 0.7)",
+            borderColor: "rgba(54, 162, 235, 1)",
             borderWidth: 1
         }]
     },
@@ -31,18 +32,18 @@ const chart = new Chart(ctx, {
 // colorMap.red(0.5) will also return 'rgba(255,0,0,0.5)'
 // a is parameter to the array representing the alpha value
 const colorMap = {
-        'red': (a=1) => `rgba(255,0,0,${a})`,
-        'orange': (a=1) => `rgba(255,165,0,${a})`,
-        'purple': (a=1) => `rgba(128,0,128,${a})`,
-        'blue': (a=1) => `rgba(54,162,235,${a})`,
+        "red": (a=1) => `rgba(255,0,0,${a})`,
+        "orange": (a=1) => `rgba(255,165,0,${a})`,
+        "purple": (a=1) => `rgba(128,0,128,${a})`,
+        "blue": (a=1) => `rgba(54,162,235,${a})`,
 };
 
 function getColor(colorKey, opacity, index = null) {
-    if (!colorKey || typeof colorMap[colorKey] !== 'function') {
+    if (!colorKey || typeof colorMap[colorKey] !== "function") {
         if (index !== null) {
             console.warn(`Invalid color key for index ${index}:`, colorKey);
         }
-        return colorMap['blue'](opacity);
+        return colorMap["blue"](opacity);
     }
     return colorMap[colorKey](opacity);
 }
@@ -61,8 +62,8 @@ function updateMainChart(array, highlightedIndices) {
 
 // This function adds the side elements by accessing the sideElementsContainer and rewrites the sections's HTML with new HTML strings
 function updateSideElements(sideElements) {
-    const container = document.getElementById('sideElementsContainer');
-    if (!container) return;
+    const container = document.getElementById("sideElementsContainer");
+    if (!container) {return;}
     container.innerHTML = sideElements
         .map(item => {
             const [name, value, color] = item;
@@ -70,7 +71,7 @@ function updateSideElements(sideElements) {
             const border = getColor(color, 1);
             return `<div class="side-element" style="background:${bg};border:1px solid ${border};">${name}: ${value}</div>`;
         })
-        .join('');
+        .join("");
 }
 
 async function updateDisplay(data) {
@@ -88,7 +89,7 @@ globalThis.updateDisplay = updateDisplay;
 
 document.getElementById("startBtn").addEventListener("click", startSort);
 function startSort() {
-    let arr = [...data];
+    const arr = [...data];
     console.log("Triggering stepper with array:", arr);
     window.triggerStepper(arr); 
 }

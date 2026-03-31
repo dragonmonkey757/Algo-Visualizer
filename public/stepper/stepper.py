@@ -1,14 +1,14 @@
 import asyncio
 import js
-from js import console
 from pyodide.ffi import to_js
+
 
 class ArrayMonitor:
     def __init__(self, array):
         self.array = array
-        self.highlighted_indices = {} 
+        self.highlighted_indices = {}
         # side_elements will be a list of tuples: [ (name, value, color), ... ]
-        self.side_elements = [] 
+        self.side_elements = []
         asyncio.create_task(self.update())
 
     async def update(self):
@@ -35,4 +35,3 @@ class ArrayMonitor:
 
     def __str__(self):
         return str(self.array)
-
