@@ -5,11 +5,14 @@ import time
 
 STEP_DELAY_SECONDS = 0.75
 
+
 class StepperStoppedError(RuntimeError):
     pass
 
+
 class StepperLimitError(RuntimeError):
     pass
+
 
 class RuntimeControl:
     def __init__(self):
@@ -35,9 +38,7 @@ class RuntimeControl:
         if step_increment:
             self.step_count += int(step_increment)
             if self.step_count > self.max_steps:
-                raise StepperLimitError(
-                    f"Step limit exceeded ({self.max_steps})."
-                )
+                raise StepperLimitError(f"Step limit exceeded ({self.max_steps}).")
         self._validate_limits()
 
     async def checkpoint(self, step_increment=0):
@@ -48,17 +49,22 @@ class RuntimeControl:
             self._validate_limits()
             await asyncio.sleep(0.05)
 
+
 CONTROL = RuntimeControl()
+
 
 def pause_stepper():
     CONTROL.paused = True
 
+
 def resume_stepper():
     CONTROL.paused = False
+
 
 def stop_stepper():
     CONTROL.stopped = True
     CONTROL.paused = False
+
 
 async def controlled_sleep(seconds):
     remaining = max(0.0, float(seconds))
@@ -68,8 +74,10 @@ async def controlled_sleep(seconds):
         await asyncio.sleep(slice_duration)
         remaining -= slice_duration
 
+
 # Async sleep must be used here, otherwise the main browser thread will be blocked
 # https://github.com/pyscript/pyscript/issues/324
+
 
 async def entry_point(arr, user_code="", max_steps=2500, max_seconds=12.0):
     CONTROL.reset(max_steps, max_seconds)
@@ -82,13 +90,16 @@ async def entry_point(arr, user_code="", max_steps=2500, max_seconds=12.0):
     finally:
         CONTROL.paused = False
 
+
 async def run_user_algorithm(arr, user_code):
     namespace = {}
     exec(user_code, namespace)
 
     algorithm = namespace.get("algorithm") or namespace.get("sort")
     if not callable(algorithm):
-        raise ValueError("Define a function named 'algorithm(arr)' or 'sort(arr)' in the editor.")
+        raise ValueError(
+            "Define a function named 'algorithm(arr)' or 'sort(arr)' in the editor."
+        )
 
     result = algorithm(arr)
     if not asyncio.iscoroutine(result):

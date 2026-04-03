@@ -7,7 +7,7 @@ class ArrayMonitor:
     def __init__(self, array, control=None):
         self.array = array
         self.control = control
-        self.highlighted_indices = {} 
+        self.highlighted_indices = {}
         # side_elements will be a list of tuples: [ (name, value, color), ... ]
         self.side_elements = []
         asyncio.create_task(self.update())
@@ -26,13 +26,13 @@ class ArrayMonitor:
                 await checkpoint(step_increment=1)
 
         update_data = {
-            'array': self.array.tolist(),
-            'highlighted_indices': self.highlighted_indices,
-            'side_elements': self.side_elements
+            "array": self.array.tolist(),
+            "highlighted_indices": self.highlighted_indices,
+            "side_elements": self.side_elements,
         }
         js_data = to_js(update_data)
 
-        update_display = getattr(js.globalThis, 'updateDisplay', None)
+        update_display = getattr(js.globalThis, "updateDisplay", None)
         update_display(js_data)
 
     async def sleep(self, seconds=0.15):
