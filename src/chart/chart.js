@@ -1,4 +1,4 @@
-import Chart from 'chart.js/auto';
+import Chart from "chart.js/auto";
 
 const data = Array.from({ length: 20 }, () => Math.floor(Math.random() * 100));
 
@@ -10,8 +10,8 @@ const chart = new Chart(ctx, {
         datasets: [{
             label: "Values",
             data: [...data],
-            backgroundColor: data.map(() => 'rgba(54,162,235,0.7)'),
-            borderColor: data.map(() => 'rgba(54,162,235,1)'),
+            backgroundColor: data.map(() => "rgba(54,162,235,0.7)"),
+            borderColor: data.map(() => "rgba(54,162,235,1)"),
             borderWidth: 1
         }]
     },
@@ -37,7 +37,7 @@ const colorMap = {
     orange: (a = 1) => `rgba(255,165,0,${a})`,
     purple: (a = 1) => `rgba(128,0,128,${a})`,
     blue: (a = 1) => `rgba(54,162,235,${a})`,
-}
+};
 
 function getColor(colorKey, opacity, index = null) {
     if (!colorKey || typeof colorMap[colorKey] !== "function") {
@@ -50,46 +50,46 @@ function getColor(colorKey, opacity, index = null) {
 }
 
 function updateMainChart(array, highlightedIndices = {}) {
-    chart.data.labels = array.map((_, i) => i)
-    chart.data.datasets[0].data = [...array]
+    chart.data.labels = array.map((_, i) => i);
+    chart.data.datasets[0].data = [...array];
     chart.data.datasets[0].backgroundColor = array.map((_, i) =>
         getColor(highlightedIndices[i], 0.7, i)
-    )
+    );
 
     chart.data.datasets[0].borderColor = array.map((_, i) =>
         getColor(highlightedIndices[i], 1, i)
-    )
+    );
 }
 
 // This function adds the side elements by accessing the sideElementsContainer and rewrites the sections's HTML with new HTML strings
 function updateSideElements(sideElements = []) {
-    const container = document.getElementById('sideElementsContainer')
-    if (!container) return
+    const container = document.getElementById("sideElementsContainer");
+    if (!container) {return;}
     container.innerHTML = sideElements
         .map((item) => {
-            const [name, value, color] = item
-            const bg = getColor(color, 0.7)
-            const border = getColor(color, 1)
-            return `<div class="side-element" style="background:${bg};border:1px solid ${border};">${name}: ${value}</div>`
+            const [name, value, color] = item;
+            const bg = getColor(color, 0.7);
+            const border = getColor(color, 1);
+            return `<div class="side-element" style="background:${bg};border:1px solid ${border};">${name}: ${value}</div>`;
         })
-        .join('')
+        .join("");
 }
 
 async function updateDisplay(data) {
-    const array = data.array || []
-    const highlightedIndices = data.highlighted_indices || {}
-    const sideElements = data.side_elements || []
+    const array = data.array || [];
+    const highlightedIndices = data.highlighted_indices || {};
+    const sideElements = data.side_elements || [];
 
-    updateMainChart(array, highlightedIndices)
-    updateSideElements(sideElements)
+    updateMainChart(array, highlightedIndices);
+    updateSideElements(sideElements);
 
-    chart.update()
+    chart.update();
 }
 
 function reportRuntimeError(message) {
-    console.error(`Runtime error: ${message}`)
+    console.error(`Runtime error: ${message}`);
 }
-globalThis.reportRuntimeError = reportRuntimeError
+globalThis.reportRuntimeError = reportRuntimeError;
 globalThis.updateDisplay = updateDisplay;
 
 document.getElementById("startBtn").addEventListener("click", startSort);

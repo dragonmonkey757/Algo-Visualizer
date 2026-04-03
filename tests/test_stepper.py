@@ -10,8 +10,13 @@ import numpy as np
 import pytest
 
 js_mod = types.ModuleType("js")
+
+
 class _Console:
-    def log(self, *args): pass
+    def log(self, *args):
+        pass
+
+
 js_mod.console = _Console()
 sys.modules.setdefault("js", js_mod)
 
@@ -26,6 +31,7 @@ from stepper import ArrayMonitor
 from default import entry_point, insertion_sort
 
 # ArrayMonitor tests
+
 
 class TestArrayMonitorInit:
     def test_stores_array(self):
@@ -122,6 +128,7 @@ class TestArrayMonitorStr:
 
 
 # insertion_sort tests
+
 
 class TestInsertionSort:
     def _run(self, lst):
