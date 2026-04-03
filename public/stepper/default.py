@@ -1,7 +1,6 @@
 from stepper import ArrayMonitor
 import asyncio
 import numpy as np
-import time
 
 class StepperStoppedError(RuntimeError):
     pass
@@ -17,27 +16,18 @@ class RuntimeControl:
 
     def reset(self, max_seconds):
         self.max_seconds = max(0.25, float(max_seconds))
-        self.started_at = time.monotonic()
         self.paused = False
         self.stopped = False
-
-    def _validate_limits(self):
-        if (time.monotonic() - self.started_at) > self.max_seconds:
-            raise StepperLimitError(
-                f"Execution timed out after {self.max_seconds:.1f}s."
-            )
 
     def _check_runtime_state(self):
         if self.stopped:
             raise StepperStoppedError("Execution stopped by user.")
-        self._validate_limits()
 
     async def checkpoint(self):
         self._check_runtime_state()
         while self.paused:
             if self.stopped:
                 raise StepperStoppedError("Execution stopped by user.")
-            self._validate_limits()
             await asyncio.sleep(0.05)
 
 
@@ -87,7 +77,12 @@ async def run_user_algorithm(arr, user_code):
             "Custom algorithms must be async. Use 'async def algorithm(arr):' and 'await arr.step(...)' in loops."
         )
 
-    await asyncio.wait_for(result, timeout=CONTROL.max_seconds)
+    try:
+        await asyncio.wait_for(result, timeout=CONTROL.max_seconds)
+    except asyncio.TimeoutError as exc:
+        raise StepperLimitError(
+            f"Execution timed out after {CONTROL.max_seconds:.1f}s."
+        ) from exc
 
     arr.highlighted_indices.clear()
     arr.side_elements = []
