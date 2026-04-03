@@ -12,10 +12,9 @@ class StepperLimitError(RuntimeError):
 
 class RuntimeControl:
     def __init__(self):
-        self.reset(12.0)
+        self.reset()
 
-    def reset(self, max_seconds):
-        self.max_seconds = max(0.25, float(max_seconds))
+    def reset(self):
         self.paused = False
         self.stopped = False
 
@@ -52,16 +51,16 @@ def stop_stepper():
 
 
 async def entry_point(arr, user_code="", max_seconds=12.0):
-    CONTROL.reset(max_seconds)
+    CONTROL.reset()
     monitored_arr = ArrayMonitor(np.array(arr), CONTROL)
     try:
         if user_code and user_code.strip():
-            await run_user_algorithm(monitored_arr, user_code)
+            await run_user_algorithm(monitored_arr, user_code, max_seconds)
     finally:
         CONTROL.paused = False
 
 
-async def run_user_algorithm(arr, user_code):
+async def run_user_algorithm(arr, user_code, max_seconds):
     namespace = {}
     exec(user_code, namespace)
 
@@ -77,11 +76,12 @@ async def run_user_algorithm(arr, user_code):
             "Custom algorithms must be async. Use 'async def algorithm(arr):' and 'await arr.step(...)' in loops."
         )
 
+    timeout = max(0.25, float(max_seconds))
     try:
-        await asyncio.wait_for(result, timeout=CONTROL.max_seconds)
+        await asyncio.wait_for(result, timeout=timeout)
     except asyncio.TimeoutError as exc:
         raise StepperLimitError(
-            f"Execution timed out after {CONTROL.max_seconds:.1f}s."
+            f"Execution timed out after {timeout:.1f}s."
         ) from exc
 
     arr.highlighted_indices.clear()
