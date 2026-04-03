@@ -23,7 +23,7 @@ jobs:
         run: pip install numpy flake8
 
       - name: Lint with flake8
-        run: flake8 public/stepper/stepper.py public/stepper/default.py
+        run: flake8 
 
   javascript:
     name: JavaScript lint
@@ -42,4 +42,4 @@ jobs:
         run: npm ci
 
       - name: Lint with ESLint
-        run: npx eslint src/editor.js public/stepper/stepper.js
+        run: npx eslint --ext .js
