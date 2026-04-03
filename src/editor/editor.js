@@ -50,7 +50,6 @@ const output = document.getElementById("output");
 
 const defaultArray = [12, 4, 9, 1, 18, 6, 3];
 let currentArray = [...defaultArray];
-const SAFETY_MAX_STEPS = 2500;
 const SAFETY_MAX_SECONDS = 12;
 
 let isRunning = false;
@@ -151,7 +150,7 @@ playBtn.addEventListener("click", async () => {
   setRunState({ running: true, paused: false });
   logOutput("Running algorithm...");
   try {
-    await window.triggerStepper(currentArray, code, SAFETY_MAX_STEPS, SAFETY_MAX_SECONDS);
+    await window.triggerStepper(currentArray, code, SAFETY_MAX_SECONDS);
     logOutput("Run completed successfully.");
   } catch (err) {
     const message = err?.message || String(err);

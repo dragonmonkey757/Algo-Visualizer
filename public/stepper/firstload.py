@@ -4,9 +4,9 @@ from default import entry_point, pause_stepper, resume_stepper, stop_stepper
 print("firstload.py is running on startup")
 
 
-async def triggerStepper(arr, code="", max_steps=2500, max_seconds=12):
+async def triggerStepper(arr, code="", max_seconds=12):
     try:
-        await entry_point(list(arr), code, int(max_steps), float(max_seconds))
+        await entry_point(list(arr), code, float(max_seconds))
     except Exception as exc:
         report_error = getattr(js.globalThis, "reportRuntimeError", None)
         if report_error:

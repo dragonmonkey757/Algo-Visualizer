@@ -10,20 +10,9 @@ class ArrayMonitor:
         self.highlighted_indices = {}
         # side_elements will be a list of tuples: [ (name, value, color), ... ]
         self.side_elements = []
-        asyncio.create_task(self.update())
-
-    def _check_sync(self, step_increment=0):
-        if self.control is None:
-            return
-        checker = getattr(self.control, "check_sync", None)
-        if checker:
-            checker(step_increment)
 
     async def update(self):
-        if self.control is not None:
-            checkpoint = getattr(self.control, "checkpoint", None)
-            if checkpoint:
-                await checkpoint(step_increment=1)
+        await self.control.checkpoint()
 
         update_data = {
             "array": self.array.tolist(),
@@ -37,11 +26,8 @@ class ArrayMonitor:
 
     async def sleep(self, seconds=0.15):
         remaining = max(0.0, float(seconds))
-        while remaining > 0:
-            if self.control is not None:
-                checkpoint = getattr(self.control, "checkpoint", None)
-                if checkpoint:
-                    await checkpoint()
+        while remaining > 0: # we use a loop here to allow for responsive pausing/stopping during the sleep period
+            await self.control.checkpoint()
             slice_duration = min(0.05, remaining)
             await asyncio.sleep(slice_duration)
             remaining -= slice_duration
@@ -51,16 +37,13 @@ class ArrayMonitor:
         await self.sleep(delay_seconds)
 
     def __getitem__(self, key):
-        self._check_sync()
         return self.array[key]
 
     def __len__(self):
         return len(self.array)
 
     def __setitem__(self, key, value):
-        self._check_sync(step_increment=1)
         self.array[key] = value
-        asyncio.create_task(self.update())
 
     def __str__(self):
         return str(self.array)
