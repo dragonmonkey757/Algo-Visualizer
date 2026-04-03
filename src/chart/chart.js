@@ -26,38 +26,27 @@ const chart = new Chart(ctx, {
 });
 
 
-// colorMap is an Object of arrow functions that returns rgba strings
-// 'red' is a key, () => '' is thr arrow function
-// 2 ways to access
-// colorMap['red'](0.5) will return 'rgba(255,0,0,0.5)'
-// colorMap.red(0.5) will also return 'rgba(255,0,0,0.5)'
-// a is parameter to the array representing the alpha value
 const colorMap = {
-    red: (a = 1) => `rgba(255,0,0,${a})`,
-    orange: (a = 1) => `rgba(255,165,0,${a})`,
-    purple: (a = 1) => `rgba(128,0,128,${a})`,
-    blue: (a = 1) => `rgba(54,162,235,${a})`,
+    red: "255,0,0",
+    orange: "255,165,0",
+    purple: "128,0,128",
+    blue: "54,162,235",
 };
 
-function getColor(colorKey, opacity, index = null) {
-    if (!colorKey || typeof colorMap[colorKey] !== "function") {
-        if (index !== null) {
-            console.warn(`Invalid color key for index ${index}:`, colorKey);
-        }
-        return colorMap.blue(opacity);
-    }
-    return colorMap[colorKey](opacity);
+function getColor(colorKey, opacity = 1) {
+    const rgb = colorMap[colorKey] || colorMap.blue;
+    return `rgba(${rgb},${opacity})`;
 }
 
 function updateMainChart(array, highlightedIndices = {}) {
     chart.data.labels = array.map((_, i) => i);
     chart.data.datasets[0].data = [...array];
     chart.data.datasets[0].backgroundColor = array.map((_, i) =>
-        getColor(highlightedIndices[i], 0.7, i)
+        getColor(highlightedIndices[i], 0.7)
     );
 
     chart.data.datasets[0].borderColor = array.map((_, i) =>
-        getColor(highlightedIndices[i], 1, i)
+        getColor(highlightedIndices[i], 1)
     );
 }
 

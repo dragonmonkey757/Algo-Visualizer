@@ -14,16 +14,9 @@ async def triggerStepper(arr, code="", max_seconds=12):
         raise
 
 
-def pauseStepper():
-    pause_stepper()
-
-
-def resumeStepper():
-    resume_stepper()
-
-
-def stopStepper():
-    stop_stepper()
+pauseStepper = pause_stepper
+resumeStepper = resume_stepper
+stopStepper = stop_stepper
 
 
 js.globalThis.triggerStepper = triggerStepper
