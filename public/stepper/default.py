@@ -3,9 +3,6 @@ import asyncio
 import numpy as np
 import time
 
-STEP_DELAY_SECONDS = 0.75
-
-
 class StepperStoppedError(RuntimeError):
     pass
 
@@ -16,13 +13,11 @@ class StepperLimitError(RuntimeError):
 
 class RuntimeControl:
     def __init__(self):
-        self.reset(2500, 12.0)
+        self.reset(12.0)
 
-    def reset(self, max_steps, max_seconds):
-        self.max_steps = max(1, int(max_steps))
+    def reset(self, max_seconds):
         self.max_seconds = max(0.25, float(max_seconds))
         self.started_at = time.monotonic()
-        self.step_count = 0
         self.paused = False
         self.stopped = False
 
@@ -32,17 +27,13 @@ class RuntimeControl:
                 f"Execution timed out after {self.max_seconds:.1f}s."
             )
 
-    def check_sync(self, step_increment=0):
+    def _check_runtime_state(self):
         if self.stopped:
             raise StepperStoppedError("Execution stopped by user.")
-        if step_increment:
-            self.step_count += int(step_increment)
-            if self.step_count > self.max_steps:
-                raise StepperLimitError(f"Step limit exceeded ({self.max_steps}).")
         self._validate_limits()
 
-    async def checkpoint(self, step_increment=0):
-        self.check_sync(step_increment)
+    async def checkpoint(self):
+        self._check_runtime_state()
         while self.paused:
             if self.stopped:
                 raise StepperStoppedError("Execution stopped by user.")
@@ -66,27 +57,16 @@ def stop_stepper():
     CONTROL.paused = False
 
 
-async def controlled_sleep(seconds):
-    remaining = max(0.0, float(seconds))
-    while remaining > 0:
-        await CONTROL.checkpoint()
-        slice_duration = min(0.05, remaining)
-        await asyncio.sleep(slice_duration)
-        remaining -= slice_duration
-
-
 # Async sleep must be used here, otherwise the main browser thread will be blocked
 # https://github.com/pyscript/pyscript/issues/324
 
 
-async def entry_point(arr, user_code="", max_steps=2500, max_seconds=12.0):
-    CONTROL.reset(max_steps, max_seconds)
+async def entry_point(arr, user_code="", max_seconds=12.0):
+    CONTROL.reset(max_seconds)
     monitored_arr = ArrayMonitor(np.array(arr), CONTROL)
     try:
         if user_code and user_code.strip():
             await run_user_algorithm(monitored_arr, user_code)
-        else:
-            await insertion_sort(monitored_arr)
     finally:
         CONTROL.paused = False
 

@@ -91,10 +91,3 @@ function reportRuntimeError(message) {
 }
 globalThis.reportRuntimeError = reportRuntimeError;
 globalThis.updateDisplay = updateDisplay;
-
-document.getElementById("startBtn").addEventListener("click", startSort);
-function startSort() {
-    const arr = [...data];
-    console.log("Triggering stepper with array:", arr);
-    window.triggerStepper(arr); 
-}
