@@ -2,6 +2,7 @@ from stepper import ArrayMonitor
 import asyncio
 import numpy as np
 
+
 class StepperStoppedError(RuntimeError):
     pass
 
@@ -73,16 +74,15 @@ async def run_user_algorithm(arr, user_code, max_seconds):
     result = algorithm(arr)
     if not asyncio.iscoroutine(result):
         raise ValueError(
-            "Custom algorithms must be async. Use 'async def algorithm(arr):' and 'await arr.step(...)' in loops."
+            "Custom algorithms must be async. "
+            "Use 'async def algorithm(arr):' and 'await arr.step(...)' in loops."
         )
 
     timeout = max(0.25, float(max_seconds))
     try:
         await asyncio.wait_for(result, timeout=timeout)
     except asyncio.TimeoutError as exc:
-        raise StepperLimitError(
-            f"Execution timed out after {timeout:.1f}s."
-        ) from exc
+        raise StepperLimitError(f"Execution timed out after {timeout:.1f}s.") from exc
 
     arr.highlighted_indices.clear()
     arr.side_elements = []
