@@ -7,7 +7,8 @@ Stubs out js.console and pyodide.ffi so tests run without a browser.
 import sys
 import types
 import numpy as np
-import pytest
+from stepper import ArrayMonitor
+from default import entry_point, insertion_sort
 
 js_mod = types.ModuleType("js")
 
@@ -27,8 +28,6 @@ pyodide_mod.ffi = ffi_mod
 sys.modules.setdefault("pyodide", pyodide_mod)
 sys.modules.setdefault("pyodide.ffi", ffi_mod)
 
-from stepper import ArrayMonitor
-from default import entry_point, insertion_sort
 
 # ArrayMonitor tests
 

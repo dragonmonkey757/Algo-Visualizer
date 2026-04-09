@@ -26,7 +26,8 @@ class ArrayMonitor:
 
     async def sleep(self, seconds=0.15):
         remaining = max(0.0, float(seconds))
-        while remaining > 0: # we use a loop here to allow for responsive pausing/stopping during the sleep period
+        while remaining > 0:
+            # loop here to allow for responsive pausing/stopping during the sleep period
             await self.control.checkpoint()
             slice_duration = min(0.05, remaining)
             await asyncio.sleep(slice_duration)

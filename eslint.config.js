@@ -33,9 +33,6 @@ export default [
       ecmaVersion: 2022,
       sourceType: "module",
     },
-    env: {
-      node: true,
-    },
   },
   {
     ignores: ["dist/", "node_modules/"],
