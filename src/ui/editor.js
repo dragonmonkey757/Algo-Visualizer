@@ -40,7 +40,7 @@ const editor = new EditorView({
   parent: document.getElementById("editor")
 });
 
-export { editor }; // Copilot says this is needed in order for editor to be retrieved in other files
+export { STARTER_CODE }; // Copilot says this is needed in order for editor to be retrieved in other files
 
 
 

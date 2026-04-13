@@ -7,6 +7,7 @@ import js
 # Async sleep must be used here, otherwise the main browser thread will be blocked
 # https://github.com/pyscript/pyscript/issues/324
 
+
 async def entry_point(arr, user_code="", max_seconds=12.0, max_steps=1000):
     try:
         CONTROL.reset(max_steps=max_steps)
@@ -21,6 +22,7 @@ async def entry_point(arr, user_code="", max_seconds=12.0, max_steps=1000):
         if report_error:
             report_error(str(exc))
         raise
+
 
 async def run_user_algorithm(arr, user_code, max_seconds):
     namespace = {}
