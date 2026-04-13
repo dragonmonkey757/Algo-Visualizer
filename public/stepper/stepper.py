@@ -1,18 +1,17 @@
-import asyncio
 import js
 from pyodide.ffi import to_js
 
 
 class ArrayMonitor:
-    def __init__(self, array, control=None):
+    def __init__(self, array, control):
         self.array = array
+        assert control is not None, "Control object must be provided to ArrayMonitor"
         self.control = control
         self.highlighted_indices = {}
         # side_elements will be a list of tuples: [ (name, value, color), ... ]
         self.side_elements = []
 
     async def update(self):
-        await self.control.checkpoint()
 
         update_data = {
             "array": self.array.tolist(),
@@ -24,18 +23,9 @@ class ArrayMonitor:
         update_display = getattr(js.globalThis, "updateDisplay", None)
         update_display(js_data)
 
-    async def sleep(self, seconds=0.15):
-        remaining = max(0.0, float(seconds))
-        while remaining > 0:
-            # loop here to allow for responsive pausing/stopping during the sleep period
-            await self.control.checkpoint()
-            slice_duration = min(0.05, remaining)
-            await asyncio.sleep(slice_duration)
-            remaining -= slice_duration
-
     async def step(self, delay_seconds=0.15):
         await self.update()
-        await self.sleep(delay_seconds)
+        await self.control.sleep(delay_seconds)
 
     def __getitem__(self, key):
         return self.array[key]

@@ -14,7 +14,7 @@
       packages = ["numpy"]
       [[fetch]]
       from = "/stepper"
-      files = ["stepper.py", "default.py", "firstload.py"]
+      files = ["stepper.py", "default.py", "firstload.py", "runcont.py"]
     </py-config>
   </head>
 
@@ -47,7 +47,8 @@
       </div>
     </div>
     <script type="py" src="/stepper/firstload.py"></script>
-    <script type="module" src="/src/chart/chart.js"></script>
-    <script type="module" src="/src/editor/editor.js"></script>
+    <script type="module" src="/src/ui/buttons.js"></script>
+    <script type="module" src="/src/ui/chart.js"></script>
+    <script type="module" src="/src/ui/editor.js"></script>
   </body>
 </html>
