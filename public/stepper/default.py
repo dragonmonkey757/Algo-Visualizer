@@ -1,65 +1,26 @@
 from stepper import ArrayMonitor
+from runcont import CONTROL, StepperLimitError
 import asyncio
 import numpy as np
-
-
-class StepperStoppedError(RuntimeError):
-    pass
-
-
-class StepperLimitError(RuntimeError):
-    pass
-
-
-class RuntimeControl:
-    def __init__(self):
-        self.reset()
-
-    def reset(self):
-        self.paused = False
-        self.stopped = False
-
-    def _check_runtime_state(self):
-        if self.stopped:
-            raise StepperStoppedError("Execution stopped by user.")
-
-    async def checkpoint(self):
-        self._check_runtime_state()
-        while self.paused:
-            if self.stopped:
-                raise StepperStoppedError("Execution stopped by user.")
-            await asyncio.sleep(0.05)
-
-
-CONTROL = RuntimeControl()
-
-
-def pause_stepper():
-    CONTROL.paused = True
-
-
-def resume_stepper():
-    CONTROL.paused = False
-
-
-def stop_stepper():
-    CONTROL.stopped = True
-    CONTROL.paused = False
-
+import js
 
 # Async sleep must be used here, otherwise the main browser thread will be blocked
 # https://github.com/pyscript/pyscript/issues/324
 
-
-async def entry_point(arr, user_code="", max_seconds=12.0):
-    CONTROL.reset()
-    monitored_arr = ArrayMonitor(np.array(arr), CONTROL)
+async def entry_point(arr, user_code="", max_seconds=12.0, max_steps=1000):
     try:
-        if user_code and user_code.strip():
-            await run_user_algorithm(monitored_arr, user_code, max_seconds)
-    finally:
-        CONTROL.paused = False
-
+        CONTROL.reset(max_steps=max_steps)
+        monitored_arr = ArrayMonitor(np.array(arr), CONTROL)
+        try:
+            if user_code and user_code.strip():
+                await run_user_algorithm(monitored_arr, user_code, max_seconds)
+        finally:
+            CONTROL.paused = False
+    except Exception as exc:
+        report_error = getattr(js.globalThis, "reportError", None)
+        if report_error:
+            report_error(str(exc))
+        raise
 
 async def run_user_algorithm(arr, user_code, max_seconds):
     namespace = {}
