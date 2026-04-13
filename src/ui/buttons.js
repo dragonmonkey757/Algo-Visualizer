@@ -1,6 +1,6 @@
 // Code written originally, copilot separated into own file
 
-import { editor } from './editor.js'
+import { editor, STARTER_CODE } from "./editor.js";
 
 const playBtn = document.getElementById("playBtn");
 const templateBtn = document.getElementById("templateBtn");

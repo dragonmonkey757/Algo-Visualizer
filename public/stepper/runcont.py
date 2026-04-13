@@ -1,11 +1,13 @@
 import asyncio
 
+
 class StepperStoppedError(RuntimeError):
     pass
 
 
 class StepperLimitError(RuntimeError):
     pass
+
 
 class RuntimeControl:
     def __init__(self):
@@ -15,8 +17,8 @@ class RuntimeControl:
         self.paused = False
         self.stopped = False
         self.max_steps = max_steps
-        self.current_steps = 0       
-        
+        self.current_steps = 0
+
     async def sleep(self, seconds=0.15):
         self.current_steps += 1
         remaining = max(0.0, float(seconds))
@@ -30,7 +32,7 @@ class RuntimeControl:
             slice_duration = min(0.05, remaining)
             await asyncio.sleep(slice_duration)
             remaining -= slice_duration
-    
+
     async def check_state(self):
         if self.stopped:
             raise StepperStoppedError("Execution stopped by user.")
