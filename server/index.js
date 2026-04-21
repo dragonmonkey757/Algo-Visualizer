@@ -1,7 +1,9 @@
 require("dotenv").config();
+const cors = require("cors");
 const exp = require("express");
 const app = exp();
 app.use(exp.json());
+app.use(cors());
 
 app.listen(3001, () => 
     {
@@ -24,12 +26,35 @@ app.post('/generate', async function(req, res)
                     parts: [
                         {  text: `Write ONLY Python code.
 
-                            Requirements:
-                            - Must define: async def algorithm(arr)
-                            - Must use: await arr.step(...)
-                            - Must update arr.highlighted_indices for comparisons
-                            - Must update arr.side_elements for actions
-                            - No explanations, no comments outside code
+                            You MUST follow this EXACT structure or the code is invalid.
+
+                            Rules:
+                            - Define: async def algorithm(arr)
+                            - Use arr like a list: len(arr), arr[i]
+                            - DO NOT use arr.data
+
+                            - highlighted_indices MUST be a dictionary:
+                            Example: {i: "orange", j: "orange"}
+
+                            - side_elements MUST be a list of lists:
+                            Example: [["compare", "5 vs 3", "orange"]]
+
+                            - For swaps:
+                            [["swap", "5 <-> 3", "red"]]
+
+                            - Always use: await arr.step(0.18) for actions
+                            - Final cleanup:
+                                arr.highlighted_indices = {}
+                                arr.side_elements = []
+                                await arr.step(0.1)
+                            - DO NOT use slicing (arr[a:b])
+                            - DO NOT create subarrays from arr
+                            - Always access elements using indices (arr[i])
+                            - Use a temporary list ONLY for merging, not slicing
+                            If implementing merge sort:
+                                - You MUST NOT use slicing
+                                - You MUST merge using index pointers (i, j)
+                            - No explanations, only code
 
                             User request: ${prompt}`
                         }  

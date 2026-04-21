@@ -32,6 +32,12 @@ const state = EditorState.create({
     lineNumbers(),
     python(),
     oneDark,
+    EditorView.updateListener.of((update) => {
+    if (update.docChanged) {
+      const code = update.state.doc.toString();
+      localStorage.setItem("savedCode", code);
+    }
+  })
   ]
 });
 

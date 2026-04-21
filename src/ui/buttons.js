@@ -9,6 +9,7 @@ const resumeBtn = document.getElementById("resumeBtn");
 const stopBtn = document.getElementById("stopBtn");
 const arrayInput = document.getElementById("arrayInput");
 const output = document.getElementById("output");
+const generateBtn = document.getElementById("generateBtn");
 
 let isRunning = false;
 let isPaused = false;
@@ -51,7 +52,7 @@ templateBtn.addEventListener("click", () => {
       insert: STARTER_CODE,
     },
   });
-  localStorage.setItem("savedCode", STARTER_CODE);
+  localStorage.removeItem("savedCode");
   logOutput("Loaded async template. Press Run to execute.", false);
 });
 
@@ -59,7 +60,6 @@ playBtn.addEventListener("click", async () => {
   if (isRunning) {return;}
 
   const code = editor.state.doc.toString();
-  localStorage.setItem("savedCode", code);
 
   if (code.trim() && !/async\s+def\s+(algorithm|sort)\s*\(/.test(code)) {
     logOutput(
@@ -118,6 +118,46 @@ stopBtn.addEventListener("click", () => {
     setRunState({ running: true, paused: false });
     logOutput("Stopping run...");
   }
+});
+
+generateBtn.addEventListener("click", async () => {
+  console.log("Generate clicked");
+
+  const prompt = window.prompt("Enter algorithm:");
+  if (!prompt) return;
+
+  console.log("Sending request...");
+
+  const response = await fetch("http://localhost:3001/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ prompt })
+  });
+
+  console.log("Response status:", response.status);
+
+  const data = await response.json();
+  console.log("FULL DATA:", data);
+
+  const code = data.code;
+  console.log("EXTRACTED CODE:", code);
+
+  if (!code) {
+    console.error("No code returned!");
+    return;
+  }
+
+  editor.dispatch({
+    changes: {
+      from: 0,
+      to: editor.state.doc.length,
+      insert: code,
+    },
+  });
+
+  console.log("Editor updated");
 });
 
 function syncControlButtons() {
