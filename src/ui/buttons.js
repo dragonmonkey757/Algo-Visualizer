@@ -141,11 +141,18 @@ generateBtn.addEventListener("click", async () => {
   const data = await response.json();
   console.log("FULL DATA:", data);
 
+  if (!response.ok) {
+    console.error("AI ERROR:", data);
+
+    logOutput(data.details || "AI failed to generate valid code", true);
+    return;
+  }
+
   const code = data.code;
   console.log("EXTRACTED CODE:", code);
 
   if (!code) {
-    console.error("No code returned!");
+    logOutput("No code returned from AI", true);
     return;
   }
 
@@ -158,6 +165,7 @@ generateBtn.addEventListener("click", async () => {
   });
 
   console.log("Editor updated");
+  logOutput("AI code generated successfully!");
 });
 
 function syncControlButtons() {
