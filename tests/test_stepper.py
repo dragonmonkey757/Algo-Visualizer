@@ -6,16 +6,9 @@ Stubs out js, pyodide.ffi so tests run without a browser or Pyodide runtime.
 
 import sys
 import types
-import asyncio
 import numpy as np
-from stepper import ArrayMonitor
-from default import entry_point, insertion_sort
+import pytest
 
-# ---------------------------------------------------------------------------
-# Stubs for browser-only modules
-# ---------------------------------------------------------------------------
-
-# stub: js
 js_mod = types.ModuleType("js")
 
 
@@ -23,6 +16,12 @@ class _GlobalThis:
     def updateDisplay(self, *args):
         pass
 
+
+# ---------------------------------------------------------------------------
+# Stubs for browser-only modules
+# ---------------------------------------------------------------------------
+
+# stub: js
 
 js_mod.globalThis = _GlobalThis()
 sys.modules.setdefault("js", js_mod)
@@ -35,19 +34,21 @@ pyodide_mod.ffi = ffi_mod
 sys.modules.setdefault("pyodide", pyodide_mod)
 sys.modules.setdefault("pyodide.ffi", ffi_mod)
 
+
 from stepper import ArrayMonitor  # noqa: E402
 from default import (  # noqa: E402
-    RuntimeControl,
-    StepperStoppedError,
-    StepperLimitError,
     entry_point,
-    insertion_sort,
+)
+from runcont import (  # noqa: E402
+    RuntimeControl,
+    CONTROL,
+    StepperStoppedError,
     pause_stepper,
     resume_stepper,
     stop_stepper,
-    CONTROL,
 )
 
+from algos import insertion_sort  # noqa: E402
 
 # ===========================================================================
 # Helpers
@@ -82,14 +83,14 @@ class TestRuntimeControl:
     @pytest.mark.asyncio
     async def test_checkpoint_passes_when_running(self):
         ctrl = RuntimeControl()
-        await ctrl.checkpoint()  # should not raise
+        await ctrl.sleep()  # should not raise
 
     @pytest.mark.asyncio
     async def test_checkpoint_raises_when_stopped(self):
         ctrl = RuntimeControl()
         ctrl.stopped = True
         with pytest.raises(StepperStoppedError):
-            await ctrl.checkpoint()
+            await ctrl.sleep()
 
     @pytest.mark.asyncio
     async def test_checkpoint_raises_when_stopped_while_paused(self):
@@ -97,7 +98,7 @@ class TestRuntimeControl:
         ctrl.paused = True
         ctrl.stopped = True
         with pytest.raises(StepperStoppedError):
-            await ctrl.checkpoint()
+            await ctrl.sleep()
 
 
 class TestStepperControls:
@@ -142,10 +143,6 @@ class TestArrayMonitorInit:
         ctrl = RuntimeControl()
         m = ArrayMonitor(np.array([1, 2, 3]), ctrl)
         assert m.control is ctrl
-
-    def test_control_defaults_to_none(self):
-        m = ArrayMonitor(np.array([1, 2, 3]))
-        assert m.control is None
 
 
 class TestArrayMonitorGetItem:
