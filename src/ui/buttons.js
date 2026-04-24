@@ -3,12 +3,23 @@
 import { editor, STARTER_CODE } from "./editor.js";
 
 const playBtn = document.getElementById("playBtn");
-const templateBtn = document.getElementById("templateBtn");
+const selectBtn = document.getElementById("selectBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const resumeBtn = document.getElementById("resumeBtn");
 const stopBtn = document.getElementById("stopBtn");
 const arrayInput = document.getElementById("arrayInput");
 const output = document.getElementById("output");
+
+const algoOptions = [
+  { text: "Bubble Sort", algocode: "bubble_sort" },
+  { text: "Insertion Sort", algocode: "insertion_sort" },
+  { text: "Stalin Sort", algocode: "stalin_sort" }
+]
+
+algoOptions.forEach((option) => {
+  const optionElement = new Option(option.text, option.algocode);
+  selectBtn.add(optionElement);
+});
 
 let isRunning = false;
 let isPaused = false;
@@ -42,17 +53,22 @@ function parseArrayInput(value) {
   return parsed;
 }
 
-templateBtn.addEventListener("click", () => {
-  if (isRunning) {return;}
+selectBtn.addEventListener("click", () => {
+  if (isRunning) return;
+  let algo_name = selectBtn.value;
+  let algo_code = globalThis.read_algo(algo_name);
+  let full_algo_string = STARTER_CODE;
+  full_algo_string = full_algo_string.replace("INSERT_ALGO_HERE", algo_name);
+  full_algo_string += `\t\n` + algo_code;
   editor.dispatch({
     changes: {
       from: 0,
       to: editor.state.doc.length,
-      insert: STARTER_CODE,
+      insert: full_algo_string,
     },
   });
-  localStorage.setItem("savedCode", STARTER_CODE);
-  logOutput("Loaded async template. Press Run to execute.", false);
+  localStorage.setItem("savedCode", full_algo_string);
+  logOutput("Loaded new algorithm.", false);
 });
 
 playBtn.addEventListener("click", async () => {
@@ -122,7 +138,7 @@ stopBtn.addEventListener("click", () => {
 
 function syncControlButtons() {
   playBtn.disabled = isRunning;
-  templateBtn.disabled = isRunning;
+  selectBtn.disabled = isRunning;
   pauseBtn.disabled = !isRunning || isPaused;
   resumeBtn.disabled = !isRunning || !isPaused;
   stopBtn.disabled = !isRunning;

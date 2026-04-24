@@ -14,7 +14,7 @@ class ArrayMonitor:
     async def update(self):
 
         update_data = {
-            "array": self.array.tolist(),
+            "array": self.array,
             "highlighted_indices": self.highlighted_indices,
             "side_elements": self.side_elements,
         }
@@ -38,3 +38,6 @@ class ArrayMonitor:
 
     def __str__(self):
         return str(self.array)
+    
+    def pop(self, key):
+        self.array.pop(key)

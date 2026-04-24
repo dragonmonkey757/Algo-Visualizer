@@ -31,6 +31,12 @@ const colorMap = {
     orange: "255,165,0",
     purple: "128,0,128",
     blue: "54,162,235",
+    green: "75,192,75",
+    yellow: "255,255,0",
+    pink: "255,192,203",
+    cyan: "0,255,255",
+    magenta: "255,0,255",
+    gray: "128,128,128"
 };
 
 function getColor(colorKey, opacity = 1) {

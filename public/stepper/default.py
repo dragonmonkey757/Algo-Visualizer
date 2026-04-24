@@ -1,7 +1,6 @@
 from stepper import ArrayMonitor
 from runcont import CONTROL, StepperLimitError
 import asyncio
-import numpy as np
 import js
 
 # Async sleep must be used here, otherwise the main browser thread will be blocked
@@ -11,7 +10,7 @@ import js
 async def entry_point(arr, user_code="", max_seconds=12.0, max_steps=1000):
     try:
         CONTROL.reset(max_steps=max_steps)
-        monitored_arr = ArrayMonitor(np.array(arr), CONTROL)
+        monitored_arr = ArrayMonitor(arr, CONTROL)
         try:
             if user_code and user_code.strip():
                 await run_user_algorithm(monitored_arr, user_code, max_seconds)
