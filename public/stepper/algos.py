@@ -1,5 +1,6 @@
 from inspect import getsource
 
+
 async def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
@@ -15,6 +16,7 @@ async def insertion_sort(arr):
         arr[j + 1] = key
         arr.highlighted_indices = {}
         arr.side_elements = []
+
 
 async def bubble_sort(arr):
     n = len(arr)
@@ -34,6 +36,7 @@ async def bubble_sort(arr):
     arr.side_elements = []
     await arr.step(0.1)
 
+
 async def stalin_sort(arr):
     i = 0
     while i < len(arr):
@@ -46,6 +49,5 @@ async def stalin_sort(arr):
 
 
 def read_algorithm(algo_methodname):
-    return getsource(globals()[algo_methodname]) 
+    return getsource(globals()[algo_methodname])
     # takes in string and gets method name by that string
-

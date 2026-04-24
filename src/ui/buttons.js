@@ -14,10 +14,12 @@ const algoOptions = [
   { text: "Bubble Sort", algocode: "bubble_sort" },
   { text: "Insertion Sort", algocode: "insertion_sort" },
   { text: "Stalin Sort", algocode: "stalin_sort" }
-]
+];
 
 algoOptions.forEach((option) => {
-  const optionElement = new Option(option.text, option.algocode);
+  const optionElement = document.createElement("option");
+  optionElement.text = option.text;
+  optionElement.value = option.algocode;
   selectBtn.add(optionElement);
 });
 
@@ -54,12 +56,12 @@ function parseArrayInput(value) {
 }
 
 selectBtn.addEventListener("click", () => {
-  if (isRunning) return;
-  let algo_name = selectBtn.value;
-  let algo_code = globalThis.read_algo(algo_name);
+  if (isRunning) {return;}
+  const algo_name = selectBtn.value;
+  const algo_code = globalThis.read_algo(algo_name);
   let full_algo_string = STARTER_CODE;
   full_algo_string = full_algo_string.replace("INSERT_ALGO_HERE", algo_name);
-  full_algo_string += `\t\n` + algo_code;
+  full_algo_string += "\t\n" + algo_code;
   editor.dispatch({
     changes: {
       from: 0,
@@ -151,3 +153,5 @@ function setRunState({ running, paused }) {
 }
 
 syncControlButtons();
+
+export { parseArrayInput };

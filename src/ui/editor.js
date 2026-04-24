@@ -6,7 +6,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import "./style.css";
 
 const STARTER_CODE = `async def algorithm(arr):
-    INSERT_ALGO_HERE(arr)
+    await INSERT_ALGO_HERE(arr)
     `;
 
 const state = EditorState.create({

@@ -32,9 +32,11 @@ export default [
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
+      globals: { "Option" : "readonly"}
     },
   },
   {
     ignores: ["dist/", "node_modules/"],
-  },
+  }
+
 ];

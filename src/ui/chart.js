@@ -1,6 +1,7 @@
 import Chart from "chart.js/auto";
+import { parseArrayInput } from "./buttons";
 
-const data = Array.from({ length: 20 }, () => Math.floor(Math.random() * 100));
+const data = parseArrayInput("12, 4, 9, 1, 18, 6, 3");
 
 const ctx = document.getElementById("chart").getContext("2d");
 const chart = new Chart(ctx, {

@@ -38,6 +38,6 @@ class ArrayMonitor:
 
     def __str__(self):
         return str(self.array)
-    
+
     def pop(self, key):
         self.array.pop(key)
