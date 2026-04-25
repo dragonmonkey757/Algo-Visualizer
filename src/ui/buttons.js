@@ -11,9 +11,10 @@ const arrayInput = document.getElementById("arrayInput");
 const output = document.getElementById("output");
 
 const algoOptions = [
+  { text: "Design your own", algocode: "default_algo" },
   { text: "Bubble Sort", algocode: "bubble_sort" },
   { text: "Insertion Sort", algocode: "insertion_sort" },
-  { text: "Stalin Sort", algocode: "stalin_sort" }
+  { text: "Purge Sort", algocode: "purge_sort" },
 ];
 
 algoOptions.forEach((option) => {

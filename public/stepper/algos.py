@@ -47,6 +47,8 @@ async def stalin_sort(arr):
             i += 1
         await arr.step(0.5)
 
+async def default_algo(arr):
+    pass
 
 def read_algorithm(algo_methodname):
     return getsource(globals()[algo_methodname])
