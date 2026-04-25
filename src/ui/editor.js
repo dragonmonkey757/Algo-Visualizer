@@ -9,6 +9,11 @@ const STARTER_CODE = `async def algorithm(arr):
     await INSERT_ALGO_HERE(arr)
     `;
 
+const SEARCH_STARTER_CODE = `async def algorithm(arr):
+  # Set the search target from the toolbar, then run the chosen search.
+  await INSERT_ALGO_HERE(arr)
+  `;
+
 const state = EditorState.create({
   doc: localStorage.getItem("savedCode") || STARTER_CODE,
   extensions: [
@@ -24,7 +29,7 @@ const editor = new EditorView({
   parent: document.getElementById("editor")
 });
 
-export { STARTER_CODE, editor }; // Copilot says this is needed in order for editor to be retrieved in other files
+export { SEARCH_STARTER_CODE, STARTER_CODE, editor };
 
 
 

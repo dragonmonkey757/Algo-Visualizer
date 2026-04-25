@@ -1,6 +1,6 @@
 // Code written originally, copilot separated into own file
 
-import { editor, STARTER_CODE } from "./editor.js";
+import { editor, SEARCH_STARTER_CODE, STARTER_CODE } from "./editor.js";
 
 const playBtn = document.getElementById("playBtn");
 const selectBtn = document.getElementById("selectBtn");
@@ -8,14 +8,22 @@ const pauseBtn = document.getElementById("pauseBtn");
 const resumeBtn = document.getElementById("resumeBtn");
 const stopBtn = document.getElementById("stopBtn");
 const arrayInput = document.getElementById("arrayInput");
+const searchInput = document.getElementById("searchInput");
+const searchPresetBtn = document.getElementById("searchPresetBtn");
 const output = document.getElementById("output");
+
+const SEARCH_ALGORITHMS = new Set(["linear_search", "binary_search"]);
 
 const algoOptions = [
   { text: "Design your own", algocode: "default_algo" },
   { text: "Bubble Sort", algocode: "bubble_sort" },
   { text: "Insertion Sort", algocode: "insertion_sort" },
+  { text: "Selection Sort", algocode: "selection_sort" },
+  { text: "Merge Sort", algocode: "merge_sort" },
+  { text: "Quick Sort", algocode: "quick_sort" },
   { text: "Purge Sort", algocode: "purge_sort" },
-  {text: "Binary Search", algocode: "binary_search"}
+  { text: "Linear Search", algocode: "linear_search" },
+  { text: "Binary Search", algocode: "binary_search" }
 ];
 
 algoOptions.forEach((option) => {
@@ -57,13 +65,76 @@ function parseArrayInput(value) {
   return parsed;
 }
 
-selectBtn.addEventListener("click", () => {
+function parseSearchTarget(value) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const parsed = Number(trimmed);
+  if (Number.isNaN(parsed)) {
+    throw new Error("Enter a numeric search target, or leave it blank to auto-pick one.");
+  }
+
+  return parsed;
+}
+
+function isSearchAlgorithm(algoName) {
+  return SEARCH_ALGORITHMS.has(algoName);
+}
+
+function updateSearchControls(algoName) {
+  const visible = isSearchAlgorithm(algoName);
+  searchInput.hidden = !visible;
+  searchPresetBtn.hidden = !visible;
+  if (!visible) {
+    window.searchTarget = null;
+    searchInput.dataset.autoTarget = "false";
+  }
+}
+
+function setSearchTargetFromArray() {
+  const values = parseArrayInput(arrayInput.value);
+  const target = values[Math.floor(values.length / 2)];
+  searchInput.value = String(target);
+  window.searchTarget = target;
+  searchInput.dataset.autoTarget = "true";
+  logOutput(`Search target set to ${target}.`, false);
+}
+
+function buildLoadedAlgorithmCode(algoName, algoCode) {
+  const starter = isSearchAlgorithm(algoName) ? SEARCH_STARTER_CODE : STARTER_CODE;
+  return starter.replace("INSERT_ALGO_HERE", algoName) + "\t\n" + algoCode;
+}
+
+function syncSearchTargetToArray() {
+  if (!isSearchAlgorithm(selectBtn.value)) {return;}
+  if (searchInput.dataset.autoTarget !== "true" && searchInput.value.trim() !== "") {
+    return;
+  }
+
+  const values = parseArrayInput(arrayInput.value);
+  const target = values[Math.floor(values.length / 2)];
+  searchInput.value = String(target);
+  window.searchTarget = target;
+}
+
+updateSearchControls(selectBtn.value);
+
+arrayInput.addEventListener("input", () => {
+  syncSearchTargetToArray();
+});
+
+searchInput.addEventListener("input", () => {
+  searchInput.dataset.autoTarget = "false";
+});
+
+selectBtn.addEventListener("change", () => {
   if (isRunning) {return;}
   const algo_name = selectBtn.value;
+  updateSearchControls(algo_name);
   const algo_code = globalThis.read_algo(algo_name);
-  let full_algo_string = STARTER_CODE;
-  full_algo_string = full_algo_string.replace("INSERT_ALGO_HERE", algo_name);
-  full_algo_string += "\t\n" + algo_code;
+  const full_algo_string = buildLoadedAlgorithmCode(algo_name, algo_code);
   editor.dispatch({
     changes: {
       from: 0,
@@ -72,7 +143,16 @@ selectBtn.addEventListener("click", () => {
     },
   });
   localStorage.setItem("savedCode", full_algo_string);
-  logOutput("Loaded new algorithm.", false);
+  logOutput(`Loaded ${selectBtn.options[selectBtn.selectedIndex].text}.`, false);
+});
+
+searchPresetBtn.addEventListener("click", () => {
+  if (isRunning || !isSearchAlgorithm(selectBtn.value)) {return;}
+  try {
+    setSearchTargetFromArray();
+  } catch (err) {
+    logOutput(err.message, true);
+  }
 });
 
 playBtn.addEventListener("click", async () => {
@@ -91,6 +171,13 @@ playBtn.addEventListener("click", async () => {
 
   try {
     currentArray = parseArrayInput(arrayInput.value);
+  } catch (err) {
+    logOutput(err.message, true);
+    return;
+  }
+
+  try {
+    window.searchTarget = parseSearchTarget(searchInput.value);
   } catch (err) {
     logOutput(err.message, true);
     return;

@@ -1,6 +1,6 @@
 import js
 from pyodide.ffi import to_js
-
+import asyncio
 
 class ArrayMonitor:
     def __init__(self, array, control):
@@ -14,7 +14,7 @@ class ArrayMonitor:
     async def update(self):
 
         update_data = {
-            "array": self.array,
+            "array": list(self.array),
             "highlighted_indices": self.highlighted_indices,
             "side_elements": self.side_elements,
         }
@@ -40,4 +40,8 @@ class ArrayMonitor:
         return str(self.array)
 
     def pop(self, key):
-        self.array.pop(key)
+        if hasattr(self.array, "pop"):
+            self.array.pop(key)
+        else:
+            self.array = [v for idx, v in enumerate(self.array) if idx != key]
+        asyncio.create_task(self.update())

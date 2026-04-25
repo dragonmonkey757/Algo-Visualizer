@@ -22,8 +22,10 @@
     <div class="app">
       <div class="toolbar">
         <input id="arrayInput" type="text" value="12, 4, 9, 1, 18, 6, 3" />
+        <input id="searchInput" type="text" placeholder="Search target (optional)" />
+        <button id="searchPresetBtn" type="button">Use middle</button>
         <button id="playBtn">▶ Run</button>
-        <select id="selectBtn">↺ Use Async Template</select>
+        <select id="selectBtn" aria-label="Algorithm selector"></select>
         <button id="pauseBtn" disabled>⏸ Pause</button>
         <button id="resumeBtn" disabled>⏵ Resume</button>
         <button id="stopBtn" disabled>⏹ Stop</button>
@@ -38,7 +40,6 @@
             <div id="sideElementsContainer"></div>
           </div>
         </section>
-
         <section class="panel editor-panel">
           <h2>Code Editor</h2>
           <div id="editor"></div>

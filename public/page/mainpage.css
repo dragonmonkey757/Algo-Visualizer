@@ -48,13 +48,36 @@ body {
   background: rgba(8, 15, 31, 0.78);
 }
 
-#arrayInput {
+#arrayInput,
+#searchInput,
+#selectBtn {
   width: min(600px, 75vw);
   padding: 8px 10px;
   border: 1px solid #35517f;
   border-radius: 8px;
   background: #121e34;
   color: #f7fbff;
+}
+
+#searchInput {
+  width: min(250px, 42vw);
+}
+
+#selectBtn {
+  width: min(260px, 38vw);
+}
+
+#selectBtn option {
+  background: #121e34;
+  color: #f7fbff;
+}
+
+#searchPresetBtn {
+  background: linear-gradient(120deg, #5a487b, #7d5ca8);
+}
+
+.toolbar [hidden] {
+  display: none !important;
 }
 
 .toolbar button {
