@@ -15,6 +15,7 @@ const algoOptions = [
   { text: "Bubble Sort", algocode: "bubble_sort" },
   { text: "Insertion Sort", algocode: "insertion_sort" },
   { text: "Purge Sort", algocode: "purge_sort" },
+  {text: "Binary Search", algocode: "binary_search"}
 ];
 
 algoOptions.forEach((option) => {
