@@ -30,14 +30,14 @@ async def run_user_algorithm(arr, user_code, max_seconds):
     algorithm = namespace.get("algorithm") or namespace.get("sort")
     if not callable(algorithm):
         raise ValueError(
-            "Define a function named 'algorithm(arr)' or 'sort(arr)' in the editor."
+            "Define a function named 'algorithm(arr)' in the editor."
         )
 
     result = algorithm(arr)
     if not asyncio.iscoroutine(result):
         raise ValueError(
             "Custom algorithms must be async. "
-            "Use 'async def algorithm(arr):' and 'await arr.step(...)' in loops."
+            "Use 'async def algorithm(arr):' in loops."
         )
 
     timeout = max(0.25, float(max_seconds))
