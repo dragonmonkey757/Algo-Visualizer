@@ -55,6 +55,7 @@ async def purge_sort(arr):
             i += 1
         await arr.step(0.5)
 
+
 async def selection_sort(arr):
     n = len(arr)
     for i in range(n):
@@ -65,7 +66,10 @@ async def selection_sort(arr):
 
         for j in range(i + 1, n):
             arr.highlighted_indices = {"purple": [i], "orange": [min_idx, j]}
-            arr.side_elements = [["minimum", arr[min_idx], "purple"], ["compare", arr[j], "orange"]]
+            arr.side_elements = [
+                ["minimum", arr[min_idx], "purple"],
+                ["compare", arr[j], "orange"],
+            ]
             await arr.step(0.14)
             if arr[j] < arr[min_idx]:
                 min_idx = j
@@ -94,7 +98,10 @@ async def quick_sort(arr):
 
         for j in range(low, high):
             arr.highlighted_indices = {"purple": [high], "orange": [j]}
-            arr.side_elements = [["pivot", pivot, "purple"], ["compare", arr[j], "orange"]]
+            arr.side_elements = [
+                ["pivot", pivot, "purple"],
+                ["compare", arr[j], "orange"],
+            ]
             await arr.step(0.13)
             if arr[j] <= pivot:
                 i += 1
@@ -129,8 +136,15 @@ async def merge_sort(arr):
     async def merge(low, mid, high):
         i, j, k = low, mid + 1, low
         while i <= mid and j <= high:
-            arr.highlighted_indices = {"orange": [i, j], "purple": list(range(low, high + 1))}
-            arr.side_elements = [["left", arr[i], "orange"], ["right", arr[j], "orange"], ["merge", f"{low}:{high}", "purple"]]
+            arr.highlighted_indices = {
+                "orange": [i, j],
+                "purple": list(range(low, high + 1)),
+            }
+            arr.side_elements = [
+                ["left", arr[i], "orange"],
+                ["right", arr[j], "orange"],
+                ["merge", f"{low}:{high}", "purple"],
+            ]
             await arr.step(0.12)
             if arr[i] <= arr[j]:
                 buffer[k] = arr[i]
@@ -152,7 +166,10 @@ async def merge_sort(arr):
 
         for idx in range(low, high + 1):
             arr[idx] = buffer[idx]
-            arr.highlighted_indices = {"green": [idx], "purple": list(range(low, high + 1))}
+            arr.highlighted_indices = {
+                "green": [idx],
+                "purple": list(range(low, high + 1)),
+            }
             arr.side_elements = [["write", arr[idx], "green"]]
             await arr.step(0.09)
 
@@ -174,11 +191,17 @@ async def linear_search(arr):
     target = _get_search_target(arr)
     for i in range(len(arr)):
         arr.highlighted_indices = {"orange": [i]}
-        arr.side_elements = [["target", target, "purple"], ["checking index", i, "orange"]]
+        arr.side_elements = [
+            ["target", target, "purple"],
+            ["checking index", i, "orange"],
+        ]
         await arr.step(0.18)
         if arr[i] == target:
             arr.highlighted_indices = {"green": [i]}
-            arr.side_elements = [["found", f"index {i}", "green"], ["value", target, "green"]]
+            arr.side_elements = [
+                ["found", f"index {i}", "green"],
+                ["value", target, "green"],
+            ]
             await arr.step(0.25)
             return
 
@@ -211,12 +234,19 @@ async def binary_search(arr):
             "purple": list(range(left, right + 1)),
             "orange": [mid],
         }
-        arr.side_elements = [["target", target, "red"], ["mid", arr[mid], "orange"], ["window", f"{left}:{right}", "purple"]]
+        arr.side_elements = [
+            ["target", target, "red"],
+            ["mid", arr[mid], "orange"],
+            ["window", f"{left}:{right}", "purple"],
+        ]
         await arr.step(0.22)
 
         if arr[mid] == target:
             arr.highlighted_indices = {"green": [mid]}
-            arr.side_elements = [["found", f"index {mid}", "green"], ["value", target, "green"]]
+            arr.side_elements = [
+                ["found", f"index {mid}", "green"],
+                ["value", target, "green"],
+            ]
             await arr.step(0.25)
             return
         if target < arr[mid]:
@@ -229,12 +259,17 @@ async def binary_search(arr):
     await arr.step(0.2)
 
 
-
 async def default_algo(arr):
     pass
+
 
 def read_algorithm(algo_methodname):
     source = getsource(globals()[algo_methodname])
     if algo_methodname in {"linear_search", "binary_search"}:
-        source = "import js\nfrom pyodide.ffi import jsnull\n\n" + getsource(_get_search_target) + "\n\n" + source
+        source = (
+            "import js\nfrom pyodide.ffi import jsnull\n\n"
+            + getsource(_get_search_target)
+            + "\n\n"
+            + source
+        )
     return source

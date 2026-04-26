@@ -2,6 +2,7 @@ import js
 from pyodide.ffi import to_js
 import asyncio
 
+
 class ArrayMonitor:
     def __init__(self, array, control):
         self.array = array

@@ -51,7 +51,7 @@ function updateMainChart(array, highlightedIndices = {}) {
     chart.data.datasets[0].backgroundColor = array.map((_, i) => getColor("blue", 0.7));
     for (const key in highlightedIndices)
     {
-       let idxList = highlightedIndices[key];
+       const idxList = highlightedIndices[key];
        for (const idx of idxList) // "Of" here because "in" gives the indices of the values
        {
             chart.data.datasets[0].backgroundColor[idx] = getColor(key, 1);
