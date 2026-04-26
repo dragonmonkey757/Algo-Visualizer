@@ -1,14 +1,6 @@
 from inspect import getsource
 import js
 
-
-def _get_search_target(arr):
-    target = getattr(js.globalThis, "searchTarget", None)
-    if target is None or target == "" or target == jsnull:
-        return arr[len(arr) // 2] if len(arr) > 0 else None
-    return target
-
-
 async def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
@@ -187,8 +179,9 @@ async def merge_sort(arr):
     await arr.step(0.1)
 
 
-async def linear_search(arr):
-    target = _get_search_target(arr)
+async def linear_search(arr, target = None):
+    if target is None:
+        target = arr.target
     for i in range(len(arr)):
         arr.highlighted_indices = {"orange": [i]}
         arr.side_elements = [
@@ -210,8 +203,9 @@ async def linear_search(arr):
     await arr.step(0.2)
 
 
-async def binary_search(arr):
-    target = _get_search_target(arr)
+async def binary_search(arr, target = None):
+    if target is None:
+        target = arr.target
     if len(arr) == 0:
         arr.side_elements = [["result", "empty array", "red"]]
         await arr.step(0.2)
@@ -264,12 +258,4 @@ async def default_algo(arr):
 
 
 def read_algorithm(algo_methodname):
-    source = getsource(globals()[algo_methodname])
-    if algo_methodname in {"linear_search", "binary_search"}:
-        source = (
-            "import js\nfrom pyodide.ffi import jsnull\n\n"
-            + getsource(_get_search_target)
-            + "\n\n"
-            + source
-        )
-    return source
+    return getsource(globals()[algo_methodname])

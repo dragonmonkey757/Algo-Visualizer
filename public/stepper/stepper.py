@@ -4,10 +4,11 @@ import asyncio
 
 
 class ArrayMonitor:
-    def __init__(self, array, control):
+    def __init__(self, array, control, optval = None):
         self.array = array
         assert control is not None, "Control object must be provided to ArrayMonitor"
         self.control = control
+        self.target = optval
         self.highlighted_indices = {}
         # side_elements will be a list of tuples: [ (name, value, color), ... ]
         self.side_elements = []
@@ -41,8 +42,4 @@ class ArrayMonitor:
         return str(self.array)
 
     def pop(self, key):
-        if hasattr(self.array, "pop"):
-            self.array.pop(key)
-        else:
-            self.array = [v for idx, v in enumerate(self.array) if idx != key]
-        asyncio.create_task(self.update())
+        self.array.pop(key) # will always have pop due to being a list

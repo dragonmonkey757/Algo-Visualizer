@@ -7,10 +7,10 @@ import js
 # https://github.com/pyscript/pyscript/issues/324
 
 
-async def entry_point(arr, user_code="", max_seconds=12.0, max_steps=1000):
+async def entry_point(arr, optval = 0, user_code="", max_seconds=12.0, max_steps=1000):
     try:
         CONTROL.reset(max_steps=max_steps)
-        monitored_arr = ArrayMonitor(arr, CONTROL)
+        monitored_arr = ArrayMonitor(arr, CONTROL, optval)
         try:
             if user_code and user_code.strip():
                 await run_user_algorithm(monitored_arr, user_code, max_seconds)

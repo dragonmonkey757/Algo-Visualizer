@@ -1,6 +1,6 @@
 // Code written originally, copilot separated into own file
 
-import { editor, SEARCH_STARTER_CODE, STARTER_CODE } from "./editor.js";
+import { editor, STARTER_CODE } from "./editor.js";
 
 const playBtn = document.getElementById("playBtn");
 const selectBtn = document.getElementById("selectBtn");
@@ -9,9 +9,9 @@ const resumeBtn = document.getElementById("resumeBtn");
 const stopBtn = document.getElementById("stopBtn");
 const arrayInput = document.getElementById("arrayInput");
 const searchInput = document.getElementById("searchInput");
-const searchPresetBtn = document.getElementById("searchPresetBtn");
+const trackingCheckbox = document.getElementById("myCheckbox");
+const searchGroup = document.getElementById("searchGroup");
 const output = document.getElementById("output");
-
 const SEARCH_ALGORITHMS = new Set(["linear_search", "binary_search"]);
 
 const algoOptions = [
@@ -65,7 +65,8 @@ function parseArrayInput(value) {
   return parsed;
 }
 
-function parseSearchTarget(value) {
+function parseSearchTarget() {
+  const value = searchInput.value;
   const trimmed = value.trim();
   if (!trimmed) {
     return null;
@@ -85,38 +86,12 @@ function isSearchAlgorithm(algoName) {
 
 function updateSearchControls(algoName) {
   const visible = isSearchAlgorithm(algoName);
-  searchInput.hidden = !visible;
-  searchPresetBtn.hidden = !visible;
-  if (!visible) {
-    window.searchTarget = null;
-    searchInput.dataset.autoTarget = "false";
-  }
-}
-
-function setSearchTargetFromArray() {
-  const values = parseArrayInput(arrayInput.value);
-  const target = values[Math.floor(values.length / 2)];
-  searchInput.value = String(target);
-  window.searchTarget = target;
-  searchInput.dataset.autoTarget = "true";
-  logOutput(`Search target set to ${target}.`, false);
+  searchGroup.hidden = !visible;
 }
 
 function buildLoadedAlgorithmCode(algoName, algoCode) {
-  const starter = isSearchAlgorithm(algoName) ? SEARCH_STARTER_CODE : STARTER_CODE;
+  const starter = STARTER_CODE;
   return starter.replace("INSERT_ALGO_HERE", algoName) + "\t\n" + algoCode;
-}
-
-function syncSearchTargetToArray() {
-  if (!isSearchAlgorithm(selectBtn.value)) {return;}
-  if (searchInput.dataset.autoTarget !== "true" && searchInput.value.trim() !== "") {
-    return;
-  }
-
-  const values = parseArrayInput(arrayInput.value);
-  const target = values[Math.floor(values.length / 2)];
-  searchInput.value = String(target);
-  window.searchTarget = target;
 }
 
 updateSearchControls(selectBtn.value);
@@ -126,7 +101,11 @@ arrayInput.addEventListener("input", () => {
 });
 
 searchInput.addEventListener("input", () => {
-  searchInput.dataset.autoTarget = "false";
+  trackingCheckbox.checked = false;
+});
+
+trackingCheckbox.addEventListener("change", () => {
+  if (trackingCheckbox.checked) { syncSearchTargetToArray(); }
 });
 
 selectBtn.addEventListener("change", () => {
@@ -144,15 +123,6 @@ selectBtn.addEventListener("change", () => {
   });
   localStorage.setItem("savedCode", full_algo_string);
   logOutput(`Loaded ${selectBtn.options[selectBtn.selectedIndex].text}.`, false);
-});
-
-searchPresetBtn.addEventListener("click", () => {
-  if (isRunning || !isSearchAlgorithm(selectBtn.value)) {return;}
-  try {
-    setSearchTargetFromArray();
-  } catch (err) {
-    logOutput(err.message, true);
-  }
 });
 
 playBtn.addEventListener("click", async () => {
@@ -176,8 +146,9 @@ playBtn.addEventListener("click", async () => {
     return;
   }
 
+  let optval = 0;
   try {
-    window.searchTarget = parseSearchTarget(searchInput.value);
+    optval = parseSearchTarget();
   } catch (err) {
     logOutput(err.message, true);
     return;
@@ -193,7 +164,7 @@ playBtn.addEventListener("click", async () => {
   setRunState({ running: true, paused: false });
   logOutput("Running algorithm...");
   try {
-    await window.triggerStepper(currentArray, code, SAFETY_MAX_SECONDS, SAFETY_MAX_STEPS);
+    await window.triggerStepper(currentArray, optval, code, SAFETY_MAX_SECONDS, SAFETY_MAX_STEPS);
     logOutput("Run completed successfully.");
   } finally {
     setRunState({ running: false, paused: false });
@@ -242,5 +213,14 @@ function setRunState({ running, paused }) {
 }
 
 syncControlButtons();
+
+function syncSearchTargetToArray() {
+  if (!isSearchAlgorithm(selectBtn.value)) {return;}
+  if (!trackingCheckbox.checked && searchInput.value.trim() !== "") {return;}
+
+  const values = parseArrayInput(arrayInput.value);
+  const target = values[Math.floor(values.length / 2)];
+  searchInput.value = String(target);
+}
 
 export { parseArrayInput };
