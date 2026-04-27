@@ -109,45 +109,42 @@ trackingCheckbox.addEventListener("change", () => {
 });
 
 selectBtn.addEventListener("focus", () => {
-  if (selectBtn.value === "default_algo")
-  {
+  if (selectBtn.value === "default_algo") {
     const code = editor.state.doc.toString();
     localStorage.setItem("savedCode", code);
   }
 });
 
 selectBtn.addEventListener("change", () => {
-  if (isRunning) {return;}
+  if (isRunning) { return; }
   const algo_name = selectBtn.value;
-  if (algo_name === "default_algo" && localStorage.getItem("savedCode"))
-  {
+  if (algo_name === "default_algo" && localStorage.getItem("savedCode")) {
     const full_algo_string = localStorage.getItem("savedCode");
-   editor.dispatch({
-    changes: {
-      from: 0,
-      to: editor.state.doc.length,
-      insert: full_algo_string,
-    },
-  });
+    editor.dispatch({
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: full_algo_string,
+      },
+    });
   }
-  else
-  {
-  updateSearchControls(algo_name);
-  const algo_code = globalThis.read_algo(algo_name);
-  const full_algo_string = buildLoadedAlgorithmCode(algo_name, algo_code);
-  editor.dispatch({
-    changes: {
-      from: 0,
-      to: editor.state.doc.length,
-      insert: full_algo_string,
-    },
-  });
-}
+  else {
+    updateSearchControls(algo_name);
+    const algo_code = globalThis.read_algo(algo_name);
+    const full_algo_string = buildLoadedAlgorithmCode(algo_name, algo_code);
+    editor.dispatch({
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: full_algo_string,
+      },
+    });
+  }
   logOutput(`Loaded ${selectBtn.options[selectBtn.selectedIndex].text}.`, false);
 });
 
 playBtn.addEventListener("click", async () => {
-  if (isRunning) {return;}
+  if (isRunning) { return; }
 
   const code = editor.state.doc.toString();
   localStorage.setItem("savedCode", code);
@@ -175,7 +172,7 @@ playBtn.addEventListener("click", async () => {
     return;
   }
 
-  if (optval === null) {optval = currentArray[currentArray.length - 1];} // Force index if none is inputted
+  if (optval === null) { optval = currentArray[currentArray.length - 1]; } // Force index if none is inputted
   window.updateDisplay({ array: currentArray, highlighted_indices: {}, side_elements: [] });
 
   if (typeof window.triggerStepper !== "function") {
@@ -194,7 +191,7 @@ playBtn.addEventListener("click", async () => {
 });
 
 pauseBtn.addEventListener("click", () => {
-  if (!isRunning || isPaused) {return;}
+  if (!isRunning || isPaused) { return; }
   if (typeof window.pauseStepper === "function") {
     window.pauseStepper();
     setRunState({ running: true, paused: true });
@@ -203,7 +200,7 @@ pauseBtn.addEventListener("click", () => {
 });
 
 resumeBtn.addEventListener("click", () => {
-  if (!isRunning || !isPaused) {return;}
+  if (!isRunning || !isPaused) { return; }
   if (typeof window.resumeStepper === "function") {
     window.resumeStepper();
     setRunState({ running: true, paused: false });
@@ -212,7 +209,7 @@ resumeBtn.addEventListener("click", () => {
 });
 
 stopBtn.addEventListener("click", () => {
-  if (!isRunning) {return;}
+  if (!isRunning) { return; }
   if (typeof window.stopStepper === "function") {
     window.stopStepper();
     setRunState({ running: true, paused: false });
@@ -237,8 +234,8 @@ function setRunState({ running, paused }) {
 syncControlButtons();
 
 function syncSearchTargetToArray() {
-  if (!isSearchAlgorithm(selectBtn.value)) {return;}
-  if (!trackingCheckbox.checked && searchInput.value.trim() !== "") {return;}
+  if (!isSearchAlgorithm(selectBtn.value)) { return; }
+  if (!trackingCheckbox.checked && searchInput.value.trim() !== "") { return; }
 
   const values = parseArrayInput(arrayInput.value);
   const target = values[Math.floor(values.length / 2)];

@@ -49,21 +49,20 @@ function updateMainChart(array, highlightedIndices = {}) {
     chart.data.labels = array.map((_, i) => i);
     chart.data.datasets[0].data = [...array];
     chart.data.datasets[0].backgroundColor = array.map((_, i) => getColor("blue", 0.7));
-    for (const key in highlightedIndices)
-    {
-       const idxList = highlightedIndices[key];
-       for (const idx of idxList) // "Of" here because "in" gives the indices of the values
-       {
+    for (const key in highlightedIndices) {
+        const idxList = highlightedIndices[key];
+        for (const idx of idxList) // "Of" here because "in" gives the indices of the values
+        {
             chart.data.datasets[0].backgroundColor[idx] = getColor(key, 1);
             chart.data.datasets[0].borderColor[idx] = getColor(key, 1);
-       }
+        }
     }
 }
 
 // This function adds the side elements by accessing the sideElementsContainer and rewrites the sections's HTML with new HTML strings
 function updateSideElements(sideElements = []) {
     const container = document.getElementById("sideElementsContainer");
-    if (!container) {return;}
+    if (!container) { return; }
     container.innerHTML = sideElements
         .map((item) => {
             const [name, value, color] = item;

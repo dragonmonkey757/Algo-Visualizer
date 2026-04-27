@@ -8,13 +8,15 @@
     <link rel="stylesheet" href="/node_modules/@pyscript/core/dist/core.css" />
     <link rel="stylesheet" href="/page/mainpage.css" />
     <link rel="stylesheet" href="/page/sidecontent.css" />
-    <script type="module" src="/node_modules/@pyscript/core/dist/core.js"></script>
+    <script
+      type="module"
+      src="/node_modules/@pyscript/core/dist/core.js"
+    ></script>
 
     <py-config>
-      interpreter = "/node_modules/pyodide/pyodide.mjs"
-      [[fetch]]
-      from = "/stepper"
-      files = ["stepper.py", "default.py", "firstload.py", "runcont.py", "algos.py"]
+      interpreter = "/node_modules/pyodide/pyodide.mjs" [[fetch]] from =
+      "/stepper" files = ["stepper.py", "default.py", "firstload.py",
+      "runcont.py", "algos.py"]
     </py-config>
   </head>
 
@@ -23,7 +25,11 @@
       <div class="toolbar">
         <input id="arrayInput" type="text" value="12, 4, 9, 1, 18, 6, 3" />
         <div id="searchGroup">
-          <input id="searchInput" type="text" placeholder="Search target (optional)" />
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search target (optional)"
+          />
           <input type="checkbox" id="myCheckbox" checked />
           <label for="myCheckbox">Auto Select Box</label>
         </div>
