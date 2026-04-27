@@ -1,5 +1,5 @@
 from stepper import ArrayMonitor
-from runcont import CONTROL, StepperLimitError
+from runcont import CONTROL
 import asyncio
 import js
 

@@ -1,6 +1,5 @@
 import js
 from pyodide.ffi import to_js
-import asyncio
 
 
 class ArrayMonitor:

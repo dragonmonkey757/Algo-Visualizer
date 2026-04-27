@@ -1,5 +1,4 @@
 from inspect import getsource
-import js
 
 
 async def insertion_sort(arr):
