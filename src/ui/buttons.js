@@ -146,8 +146,8 @@ selectBtn.addEventListener("change", () => {
 playBtn.addEventListener("click", async () => {
   if (isRunning) { return; }
 
+  const code = editor.state.doc.toString();
   if (selectBtn.value === "default_algo") {
-    const code = editor.state.doc.toString();
     localStorage.setItem("savedCode", code);
   }
 
