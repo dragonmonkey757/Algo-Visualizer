@@ -1,6 +1,7 @@
 from inspect import getsource
 import js
 
+
 async def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
@@ -179,7 +180,7 @@ async def merge_sort(arr):
     await arr.step(0.1)
 
 
-async def linear_search(arr, target = None):
+async def linear_search(arr, target=None):
     if target is None:
         target = arr.target
     for i in range(len(arr)):
@@ -203,7 +204,7 @@ async def linear_search(arr, target = None):
     await arr.step(0.2)
 
 
-async def binary_search(arr, target = None):
+async def binary_search(arr, target=None):
     if target is None:
         target = arr.target
     if len(arr) == 0:
@@ -212,13 +213,8 @@ async def binary_search(arr, target = None):
         return
 
     # Binary search needs sorted data for meaningful visualization.
-    for i in range(1, len(arr)):
-        key = arr[i]
-        j = i - 1
-        while j >= 0 and arr[j] > key:
-            arr[j + 1] = arr[j]
-            j -= 1
-        arr[j + 1] = key
+    arr.sort()
+    arr.step(0.1)
 
     left = 0
     right = len(arr) - 1

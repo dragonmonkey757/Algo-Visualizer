@@ -108,9 +108,30 @@ trackingCheckbox.addEventListener("change", () => {
   if (trackingCheckbox.checked) { syncSearchTargetToArray(); }
 });
 
+selectBtn.addEventListener("focus", () => {
+  if (selectBtn.value === "default_algo")
+  {
+    const code = editor.state.doc.toString();
+    localStorage.setItem("savedCode", code);
+  }
+});
+
 selectBtn.addEventListener("change", () => {
   if (isRunning) {return;}
   const algo_name = selectBtn.value;
+  if (algo_name === "default_algo" && localStorage.getItem("savedCode"))
+  {
+    const full_algo_string = localStorage.getItem("savedCode");
+   editor.dispatch({
+    changes: {
+      from: 0,
+      to: editor.state.doc.length,
+      insert: full_algo_string,
+    },
+  });
+  }
+  else
+  {
   updateSearchControls(algo_name);
   const algo_code = globalThis.read_algo(algo_name);
   const full_algo_string = buildLoadedAlgorithmCode(algo_name, algo_code);
@@ -121,7 +142,7 @@ selectBtn.addEventListener("change", () => {
       insert: full_algo_string,
     },
   });
-  localStorage.setItem("savedCode", full_algo_string);
+}
   logOutput(`Loaded ${selectBtn.options[selectBtn.selectedIndex].text}.`, false);
 });
 
@@ -146,7 +167,7 @@ playBtn.addEventListener("click", async () => {
     return;
   }
 
-  let optval = 0;
+  let optval;
   try {
     optval = parseSearchTarget();
   } catch (err) {
@@ -154,6 +175,7 @@ playBtn.addEventListener("click", async () => {
     return;
   }
 
+  if (optval === null) {optval = currentArray[currentArray.length - 1];} // Force index if none is inputted
   window.updateDisplay({ array: currentArray, highlighted_indices: {}, side_elements: [] });
 
   if (typeof window.triggerStepper !== "function") {

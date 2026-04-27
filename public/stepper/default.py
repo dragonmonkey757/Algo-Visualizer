@@ -7,7 +7,7 @@ import js
 # https://github.com/pyscript/pyscript/issues/324
 
 
-async def entry_point(arr, optval = 0, user_code="", max_seconds=12.0, max_steps=1000):
+async def entry_point(arr, optval=0, user_code="", max_seconds=12.0, max_steps=1000):
     try:
         CONTROL.reset(max_steps=max_steps)
         monitored_arr = ArrayMonitor(arr, CONTROL, optval)
@@ -29,9 +29,7 @@ async def run_user_algorithm(arr, user_code, max_seconds):
 
     algorithm = namespace.get("algorithm") or namespace.get("sort")
     if not callable(algorithm):
-        raise ValueError(
-            "Define a function named 'algorithm(arr)' in the editor."
-        )
+        raise ValueError("Define a function named 'algorithm(arr)' in the editor.")
 
     result = algorithm(arr)
     if not asyncio.iscoroutine(result):
@@ -43,8 +41,8 @@ async def run_user_algorithm(arr, user_code, max_seconds):
     timeout = max(0.25, float(max_seconds))
     try:
         await asyncio.wait_for(result, timeout=timeout)
-    except asyncio.TimeoutError as exc:
-        raise StepperLimitError(f"Execution timed out after {timeout:.1f}s.") from exc
+    except Exception as e:
+        print(f"Error during algorithm execution: {e}")
 
     arr.highlighted_indices.clear()
     arr.side_elements = []

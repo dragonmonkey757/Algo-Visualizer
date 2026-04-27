@@ -4,8 +4,8 @@ import asyncio
 
 
 class ArrayMonitor:
-    def __init__(self, array, control, optval = None):
-        self.array = array
+    def __init__(self, array, control, optval=None):
+        self.array = list(array)  # Force a conversion to list
         assert control is not None, "Control object must be provided to ArrayMonitor"
         self.control = control
         self.target = optval
@@ -42,4 +42,7 @@ class ArrayMonitor:
         return str(self.array)
 
     def pop(self, key):
-        self.array.pop(key) # will always have pop due to being a list
+        self.array.pop(key)  # will always have pop due to being a list
+
+    def sort(self):
+        self.array.sort()
