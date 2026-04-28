@@ -6,7 +6,6 @@ Stubs out js, pyodide.ffi so tests run without a browser or Pyodide runtime.
 
 import sys
 import types
-import numpy as np
 import pytest
 
 js_mod = types.ModuleType("js")
@@ -58,7 +57,7 @@ from algos import insertion_sort  # noqa: E402
 def make_monitor(lst, control=None):
     """Create an ArrayMonitor with a fresh RuntimeControl by default."""
     ctrl = control or RuntimeControl()
-    return ArrayMonitor(np.array(lst, dtype=float), ctrl), ctrl
+    return ArrayMonitor(list(lst), ctrl), ctrl
 
 
 # ===========================================================================
@@ -127,9 +126,8 @@ class TestStepperControls:
 
 class TestArrayMonitorInit:
     def test_stores_array(self):
-        arr = np.array([3, 1, 2])
         m, _ = make_monitor([3, 1, 2])
-        np.testing.assert_array_equal(m.array, arr)
+        assert m.array == [3, 1, 2]
 
     def test_initial_highlights_empty_dict(self):
         m, _ = make_monitor([1, 2, 3])
@@ -141,7 +139,7 @@ class TestArrayMonitorInit:
 
     def test_control_stored(self):
         ctrl = RuntimeControl()
-        m = ArrayMonitor(np.array([1, 2, 3]), ctrl)
+        m = ArrayMonitor([1, 2, 3], ctrl)
         assert m.control is ctrl
 
 
@@ -192,9 +190,8 @@ class TestArrayMonitorLen:
 
 class TestArrayMonitorStr:
     def test_str(self):
-        arr = np.array([1, 2, 3])
-        m = ArrayMonitor(np.array([1, 2, 3]), RuntimeControl())
-        assert str(m) == str(arr)
+        m = ArrayMonitor([1, 2, 3], RuntimeControl())
+        assert str(m) == str([1, 2, 3])
 
 
 class TestArrayMonitorHighlightedIndices:
@@ -238,9 +235,9 @@ class TestInsertionSort:
     async def _run(self, lst):
         CONTROL.reset()
         ctrl = RuntimeControl()
-        m = ArrayMonitor(np.array(lst, dtype=float), ctrl)
+        m = ArrayMonitor(list(lst), ctrl)
         await insertion_sort(m)
-        return m.array.tolist()
+        return m.array
 
     async def test_sorted_output_random(self):
         assert await self._run([3, 1, 4, 1, 5, 9, 2, 6]) == sorted(
@@ -270,19 +267,19 @@ class TestInsertionSort:
 
     async def test_side_elements_cleared_after_sort(self):
         ctrl = RuntimeControl()
-        m = ArrayMonitor(np.array([3, 1, 2], dtype=float), ctrl)
+        m = ArrayMonitor([3, 1, 2], ctrl)
         await insertion_sort(m)
         assert m.side_elements == []
 
     async def test_highlights_cleared_after_sort(self):
         ctrl = RuntimeControl()
-        m = ArrayMonitor(np.array([3, 1, 2], dtype=float), ctrl)
+        m = ArrayMonitor([3, 1, 2], ctrl)
         await insertion_sort(m)
         assert m.highlighted_indices == {}
 
     async def test_stop_raises_error(self):
         ctrl = RuntimeControl()
-        m = ArrayMonitor(np.array([5, 4, 3, 2, 1], dtype=float), ctrl)
+        m = ArrayMonitor([5, 4, 3, 2, 1], ctrl)
         ctrl.stopped = True
         with pytest.raises(StepperStoppedError):
             await insertion_sort(m)

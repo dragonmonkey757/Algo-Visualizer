@@ -8,23 +8,23 @@ export default [
       ecmaVersion: 2022,
       sourceType: "module",
       globals: {
-        window:       "readonly",
-        document:     "readonly",
-        console:      "readonly",
-        alert:        "readonly",
+        window: "readonly",
+        document: "readonly",
+        console: "readonly",
+        alert: "readonly",
         localStorage: "readonly",
       },
     },
     rules: {
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "no-undef":       "error",
-      "no-console":     "off",
-      "eqeqeq":         ["error", "always"],
-      "curly":          ["error", "all"],
-      "no-var":         "error",
-      "prefer-const":   "warn",
-      "semi":           ["warn", "always"],
-      "quotes":         ["warn", "double", { avoidEscape: true }],
+      "no-undef": "error",
+      "no-console": "off",
+      "eqeqeq": ["error", "always"],
+      "curly": ["error", "all"],
+      "no-var": "error",
+      "prefer-const": "warn",
+      "semi": ["warn", "always"],
+      "quotes": ["warn", "double", { avoidEscape: true }],
     },
   },
   {
@@ -32,9 +32,11 @@ export default [
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
+      globals: { "Option": "readonly" }
     },
   },
   {
     ignores: ["dist/", "node_modules/"],
-  },
+  }
+
 ];

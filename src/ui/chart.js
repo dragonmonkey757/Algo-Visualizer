@@ -1,6 +1,7 @@
 import Chart from "chart.js/auto";
+import { parseArrayInput } from "./buttons";
 
-const data = Array.from({ length: 20 }, () => Math.floor(Math.random() * 100));
+const data = parseArrayInput("12, 4, 9, 1, 18, 6, 3");
 
 const ctx = document.getElementById("chart").getContext("2d");
 const chart = new Chart(ctx, {
@@ -31,6 +32,12 @@ const colorMap = {
     orange: "255,165,0",
     purple: "128,0,128",
     blue: "54,162,235",
+    green: "75,192,75",
+    yellow: "255,255,0",
+    pink: "255,192,203",
+    cyan: "0,255,255",
+    magenta: "255,0,255",
+    gray: "128,128,128"
 };
 
 function getColor(colorKey, opacity = 1) {
@@ -41,19 +48,21 @@ function getColor(colorKey, opacity = 1) {
 function updateMainChart(array, highlightedIndices = {}) {
     chart.data.labels = array.map((_, i) => i);
     chart.data.datasets[0].data = [...array];
-    chart.data.datasets[0].backgroundColor = array.map((_, i) =>
-        getColor(highlightedIndices[i], 0.7)
-    );
-
-    chart.data.datasets[0].borderColor = array.map((_, i) =>
-        getColor(highlightedIndices[i], 1)
-    );
+    chart.data.datasets[0].backgroundColor = array.map((_, i) => getColor("blue", 0.7));
+    for (const key in highlightedIndices) {
+        const idxList = highlightedIndices[key];
+        for (const idx of idxList) // "Of" here because "in" gives the indices of the values
+        {
+            chart.data.datasets[0].backgroundColor[idx] = getColor(key, 1);
+            chart.data.datasets[0].borderColor[idx] = getColor(key, 1);
+        }
+    }
 }
 
 // This function adds the side elements by accessing the sideElementsContainer and rewrites the sections's HTML with new HTML strings
 function updateSideElements(sideElements = []) {
     const container = document.getElementById("sideElementsContainer");
-    if (!container) {return;}
+    if (!container) { return; }
     container.innerHTML = sideElements
         .map((item) => {
             const [name, value, color] = item;

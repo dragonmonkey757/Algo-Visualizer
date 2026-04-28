@@ -3,12 +3,35 @@
 import { editor, STARTER_CODE } from "./editor.js";
 
 const playBtn = document.getElementById("playBtn");
-const templateBtn = document.getElementById("templateBtn");
+const selectBtn = document.getElementById("selectBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const resumeBtn = document.getElementById("resumeBtn");
 const stopBtn = document.getElementById("stopBtn");
 const arrayInput = document.getElementById("arrayInput");
+const searchInput = document.getElementById("searchInput");
+const trackingCheckbox = document.getElementById("myCheckbox");
+const searchGroup = document.getElementById("searchGroup");
 const output = document.getElementById("output");
+const SEARCH_ALGORITHMS = new Set(["linear_search", "binary_search"]);
+
+const algoOptions = [
+  { text: "Design your own", algocode: "default_algo" },
+  { text: "Bubble Sort", algocode: "bubble_sort" },
+  { text: "Insertion Sort", algocode: "insertion_sort" },
+  { text: "Selection Sort", algocode: "selection_sort" },
+  { text: "Merge Sort", algocode: "merge_sort" },
+  { text: "Quick Sort", algocode: "quick_sort" },
+  { text: "Purge Sort", algocode: "purge_sort" },
+  { text: "Linear Search", algocode: "linear_search" },
+  { text: "Binary Search", algocode: "binary_search" }
+];
+
+algoOptions.forEach((option) => {
+  const optionElement = document.createElement("option");
+  optionElement.text = option.text;
+  optionElement.value = option.algocode;
+  selectBtn.add(optionElement);
+});
 
 let isRunning = false;
 let isPaused = false;
@@ -42,24 +65,91 @@ function parseArrayInput(value) {
   return parsed;
 }
 
-templateBtn.addEventListener("click", () => {
-  if (isRunning) {return;}
-  editor.dispatch({
-    changes: {
-      from: 0,
-      to: editor.state.doc.length,
-      insert: STARTER_CODE,
-    },
-  });
-  localStorage.setItem("savedCode", STARTER_CODE);
-  logOutput("Loaded async template. Press Run to execute.", false);
+function parseSearchTarget() {
+  const value = searchInput.value;
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const parsed = Number(trimmed);
+  if (Number.isNaN(parsed)) {
+    throw new Error("Enter a numeric search target, or leave it blank to auto-pick one.");
+  }
+
+  return parsed;
+}
+
+function isSearchAlgorithm(algoName) {
+  return SEARCH_ALGORITHMS.has(algoName);
+}
+
+function updateSearchControls(algoName) {
+  const visible = isSearchAlgorithm(algoName);
+  searchGroup.hidden = !visible;
+}
+
+function buildLoadedAlgorithmCode(algoName, algoCode) {
+  const starter = STARTER_CODE;
+  return starter.replace("INSERT_ALGO_HERE", algoName) + "\t\n" + algoCode;
+}
+
+updateSearchControls(selectBtn.value);
+
+arrayInput.addEventListener("input", () => {
+  syncSearchTargetToArray();
+});
+
+searchInput.addEventListener("input", () => {
+  trackingCheckbox.checked = false;
+});
+
+trackingCheckbox.addEventListener("change", () => {
+  if (trackingCheckbox.checked) { syncSearchTargetToArray(); }
+});
+
+selectBtn.addEventListener("focus", () => {
+  if (selectBtn.value === "default_algo") {
+    const code = editor.state.doc.toString();
+    localStorage.setItem("savedCode", code);
+  }
+});
+
+selectBtn.addEventListener("change", () => {
+  if (isRunning) { return; }
+  const algo_name = selectBtn.value;
+  if (algo_name === "default_algo" && localStorage.getItem("savedCode")) {
+    const full_algo_string = localStorage.getItem("savedCode");
+    editor.dispatch({
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: full_algo_string,
+      },
+    });
+  }
+  else {
+    updateSearchControls(algo_name);
+    const algo_code = globalThis.read_algo(algo_name);
+    const full_algo_string = buildLoadedAlgorithmCode(algo_name, algo_code);
+    editor.dispatch({
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: full_algo_string,
+      },
+    });
+  }
+  logOutput(`Loaded ${selectBtn.options[selectBtn.selectedIndex].text}.`, false);
 });
 
 playBtn.addEventListener("click", async () => {
-  if (isRunning) {return;}
+  if (isRunning) { return; }
 
   const code = editor.state.doc.toString();
-  localStorage.setItem("savedCode", code);
+  if (selectBtn.value === "default_algo") {
+    localStorage.setItem("savedCode", code);
+  }
 
   if (code.trim() && !/async\s+def\s+(algorithm|sort)\s*\(/.test(code)) {
     logOutput(
@@ -76,6 +166,15 @@ playBtn.addEventListener("click", async () => {
     return;
   }
 
+  let optval;
+  try {
+    optval = parseSearchTarget();
+  } catch (err) {
+    logOutput(err.message, true);
+    return;
+  }
+
+  if (optval === null) { optval = currentArray[currentArray.length - 1]; } // Force index if none is inputted
   window.updateDisplay({ array: currentArray, highlighted_indices: {}, side_elements: [] });
 
   if (typeof window.triggerStepper !== "function") {
@@ -86,7 +185,7 @@ playBtn.addEventListener("click", async () => {
   setRunState({ running: true, paused: false });
   logOutput("Running algorithm...");
   try {
-    await window.triggerStepper(currentArray, code, SAFETY_MAX_SECONDS, SAFETY_MAX_STEPS);
+    await window.triggerStepper(currentArray, optval, code, SAFETY_MAX_SECONDS, SAFETY_MAX_STEPS);
     logOutput("Run completed successfully.");
   } finally {
     setRunState({ running: false, paused: false });
@@ -94,7 +193,7 @@ playBtn.addEventListener("click", async () => {
 });
 
 pauseBtn.addEventListener("click", () => {
-  if (!isRunning || isPaused) {return;}
+  if (!isRunning || isPaused) { return; }
   if (typeof window.pauseStepper === "function") {
     window.pauseStepper();
     setRunState({ running: true, paused: true });
@@ -103,7 +202,7 @@ pauseBtn.addEventListener("click", () => {
 });
 
 resumeBtn.addEventListener("click", () => {
-  if (!isRunning || !isPaused) {return;}
+  if (!isRunning || !isPaused) { return; }
   if (typeof window.resumeStepper === "function") {
     window.resumeStepper();
     setRunState({ running: true, paused: false });
@@ -112,7 +211,7 @@ resumeBtn.addEventListener("click", () => {
 });
 
 stopBtn.addEventListener("click", () => {
-  if (!isRunning) {return;}
+  if (!isRunning) { return; }
   if (typeof window.stopStepper === "function") {
     window.stopStepper();
     setRunState({ running: true, paused: false });
@@ -122,7 +221,7 @@ stopBtn.addEventListener("click", () => {
 
 function syncControlButtons() {
   playBtn.disabled = isRunning;
-  templateBtn.disabled = isRunning;
+  selectBtn.disabled = isRunning;
   pauseBtn.disabled = !isRunning || isPaused;
   resumeBtn.disabled = !isRunning || !isPaused;
   stopBtn.disabled = !isRunning;
@@ -135,3 +234,14 @@ function setRunState({ running, paused }) {
 }
 
 syncControlButtons();
+
+function syncSearchTargetToArray() {
+  if (!isSearchAlgorithm(selectBtn.value)) { return; }
+  if (!trackingCheckbox.checked && searchInput.value.trim() !== "") { return; }
+
+  const values = parseArrayInput(arrayInput.value);
+  const target = values[Math.floor(values.length / 2)];
+  searchInput.value = String(target);
+}
+
+export { parseArrayInput };

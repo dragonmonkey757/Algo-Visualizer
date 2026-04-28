@@ -3,10 +3,11 @@ from pyodide.ffi import to_js
 
 
 class ArrayMonitor:
-    def __init__(self, array, control):
-        self.array = array
+    def __init__(self, array, control, optval=None):
+        self.array = list(array)  # Force a conversion to list
         assert control is not None, "Control object must be provided to ArrayMonitor"
         self.control = control
+        self.target = optval
         self.highlighted_indices = {}
         # side_elements will be a list of tuples: [ (name, value, color), ... ]
         self.side_elements = []
@@ -14,7 +15,7 @@ class ArrayMonitor:
     async def update(self):
 
         update_data = {
-            "array": self.array.tolist(),
+            "array": list(self.array),
             "highlighted_indices": self.highlighted_indices,
             "side_elements": self.side_elements,
         }
@@ -38,3 +39,9 @@ class ArrayMonitor:
 
     def __str__(self):
         return str(self.array)
+
+    def pop(self, key):
+        self.array.pop(key)  # will always have pop due to being a list
+
+    def sort(self):
+        self.array.sort()
