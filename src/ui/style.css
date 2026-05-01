@@ -23,7 +23,3 @@
   overflow-y: auto;
   white-space: pre-wrap;
 }
-
-#output.error {
-  color: #ff9f9f;
-}
