@@ -1,14 +1,21 @@
+/* Overarching editor panel (with output) */
 .editor-panel {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 10px;
 }
 
+/* Our editor div */
 #editor {
   border: 1px solid #293d5f;
   border-radius: 8px;
   overflow: hidden;
   min-height: 0;
+}
+
+/* CodeMirror's internal editor class */
+.cm-editor {
+  height: 100%;
 }
 
 #output {

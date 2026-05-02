@@ -1,8 +1,9 @@
 import { EditorState } from "@codemirror/state";
-import { EditorView, lineNumbers } from "@codemirror/view";
+import { EditorView, lineNumbers, keymap } from "@codemirror/view";
 import { basicSetup } from "codemirror";
 import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
+import { indentWithTab } from "@codemirror/commands";
 import "./style.css";
 
 const STARTER_CODE = `async def algorithm(arr):
@@ -16,6 +17,7 @@ const state = EditorState.create({
     lineNumbers(),
     python(),
     oneDark,
+    keymap.of([indentWithTab]),
   ]
 });
 

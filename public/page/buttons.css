@@ -20,7 +20,7 @@
 }
 
 #searchInput {
-  width: min(250px, 42vw);
+  width: min(50px, 42vw);
 }
 
 #selectBtn {
