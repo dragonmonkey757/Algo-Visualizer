@@ -15,8 +15,9 @@ Pyscript is what runs any user defined or custom algorithm and is the core of ou
 The array abstraction layer of Pyscript provides array modifications using a python list attribute, several methods for updating chart.js, and other attributes which gives extra info like the Step Context. 
 GUI buttons include pausing, starting, etc which uses a python method (executed in javascript using the Pyscript FFI) and halts the algorithm until the user wants to continue. It also provides several safety features like a max step count.
 
-THe code editor is the one feature that communicates both ways with pyscript. Code is sent from the editor into pyscript for execution and our predefined algorithms' code is extracted using pyscript, sent into a javascript string, manipulated, then displayed
+THe code editor (made using CodeMirror) is the one feature that communicates both ways with pyscript. Code is sent from the editor into pyscript for execution and our predefined algorithms' code is extracted using pyscript, sent into a javascript string, manipulated, then displayed. To allow tabbing (especially since python is indent heavy), CodeMirror provides an option to handle it.
 
+Chart.js is the library that handles rendering the array in a pleasing manner. We use a bar chart to display everything, which especially helps with sorting. D3.JS was an option we were considering however we went with chart.js since its more abstract. We also allow the user to send additional strings to a different part of the UI and also provide the ability to set indices certain colors.
 
 ## Installation Instructions
 How to run locally
