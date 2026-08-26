@@ -6,7 +6,7 @@ app.use(exp.json());
 app.use(cors());
 
 function validateGeneratedCode(code) {
-  if (!code) return "No code returned";
+  if (!code){ return "No code returned"};
 
   if (!/async\s+def\s+algorithm\s*\(/.test(code)) {
     return "Missing 'async def algorithm(arr)'";

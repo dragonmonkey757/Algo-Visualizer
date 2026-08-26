@@ -2,6 +2,8 @@ import js from "@eslint/js";
 
 export default [
   js.configs.recommended,
+
+  // Frontend and PyScript code
   {
     files: ["src/**/*.js", "public/stepper/**/*.js"],
     languageOptions: {
@@ -13,6 +15,8 @@ export default [
         console: "readonly",
         alert: "readonly",
         localStorage: "readonly",
+        fetch: "readonly",
+        setTimeout: "readonly",
       },
     },
     rules: {
@@ -27,23 +31,40 @@ export default [
       "quotes": ["warn", "double", { avoidEscape: true }],
     },
   },
+
+  // Node.js server
+  {
+    files: ["server/**/*.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "commonjs",
+      globals: {
+        require: "readonly",
+        process: "readonly",
+        console: "readonly",
+        fetch: "readonly",
+        setTimeout: "readonly",
+      },
+    },
+    rules: {
+      "no-undef": "error",
+      "no-console": "off",
+      "curly": ["error", "all"],
+    },
+  },
+
   {
     files: ["vite.config.*", ".*rc.js", ".eslintrc.*", "scripts/**"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
-      globals: { "Option": "readonly" }
+      globals: {
+        Option: "readonly",
+      },
     },
   },
-  {
-    files: ["vite.config.*", ".*rc.js", ".eslintrc.*", "scripts/**"],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: "module",
-    },
-  },
+
   {
     ignores: ["dist/", "node_modules/"],
-  }
-
+  },
 ];

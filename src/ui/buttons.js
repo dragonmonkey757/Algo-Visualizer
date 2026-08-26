@@ -50,10 +50,6 @@ function logOutput(message, isError = false) {
   output.classList.toggle("error", isError);
 }
 
-function reportError(message) {
-  logOutput(message, true);
-}
-
 function parseArrayInput(value) {
   const parsed = value
     .split(",")
