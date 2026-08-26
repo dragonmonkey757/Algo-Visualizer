@@ -29,7 +29,7 @@ How to run locally
 
 ## Group Members and Their Roles
 
-- Aryan Patel: Editor integration and any bug fixes relating to it
+- Aryan Patel: Editor integration, any bug fixes relating to it, and AI integration
 - Ibrahim Tayeb: Chart.js integration, Piecing all the components together, designing algorithms
 - Simon Piwcewicz: Project setup and management, Array abstraction layer, refacorting work to improve code quality
 - Shiv Bhavsar: CI research, setup, and deployment. Keeping CI update as project continues to evolve
