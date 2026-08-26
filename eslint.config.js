@@ -36,6 +36,13 @@ export default [
     },
   },
   {
+    files: ["vite.config.*", ".*rc.js", ".eslintrc.*", "scripts/**"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+    },
+  },
+  {
     ignores: ["dist/", "node_modules/"],
   }
 

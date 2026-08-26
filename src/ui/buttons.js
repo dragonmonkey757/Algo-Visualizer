@@ -8,10 +8,13 @@ const pauseBtn = document.getElementById("pauseBtn");
 const resumeBtn = document.getElementById("resumeBtn");
 const stopBtn = document.getElementById("stopBtn");
 const arrayInput = document.getElementById("arrayInput");
+
 const searchInput = document.getElementById("searchInput");
 const trackingCheckbox = document.getElementById("myCheckbox");
 const searchGroup = document.getElementById("searchGroup");
 const output = document.getElementById("output");
+const generateBtn = document.getElementById("generateBtn");
+
 const SEARCH_ALGORITHMS = new Set(["linear_search", "binary_search"]);
 
 const algoOptions = [
@@ -52,14 +55,15 @@ function reportError(message) {
 }
 
 function parseArrayInput(value) {
-
   const parsed = value
     .split(",")
     .map((v) => Number(v.trim()))
     .filter((v) => !Number.isNaN(v));
 
   if (parsed.length === 0) {
-    throw new Error("Enter a comma-separated list of numbers, like: 4, 2, 9, 1");
+    throw new Error(
+      "Enter a comma-separated list of numbers, like: 4, 2, 9, 1"
+    );
   }
 
   return parsed;
@@ -68,13 +72,17 @@ function parseArrayInput(value) {
 function parseSearchTarget() {
   const value = searchInput.value;
   const trimmed = value.trim();
+
   if (!trimmed) {
     return null;
   }
 
   const parsed = Number(trimmed);
+
   if (Number.isNaN(parsed)) {
-    throw new Error("Enter a numeric search target, or leave it blank to auto-pick one.");
+    throw new Error(
+      "Enter a numeric search target, or leave it blank to auto-pick one."
+    );
   }
 
   return parsed;
@@ -105,7 +113,9 @@ searchInput.addEventListener("input", () => {
 });
 
 trackingCheckbox.addEventListener("change", () => {
-  if (trackingCheckbox.checked) { syncSearchTargetToArray(); }
+  if (trackingCheckbox.checked) {
+    syncSearchTargetToArray();
+  }
 });
 
 selectBtn.addEventListener("focus", () => {
@@ -116,42 +126,64 @@ selectBtn.addEventListener("focus", () => {
 });
 
 selectBtn.addEventListener("change", () => {
-  if (isRunning) { return; }
+  if (isRunning) {
+    return;
+  }
+
   const algo_name = selectBtn.value;
-  if (algo_name === "default_algo" && localStorage.getItem("savedCode")) {
+
+  if (
+    algo_name === "default_algo" &&
+    localStorage.getItem("savedCode")
+  ) {
     const full_algo_string = localStorage.getItem("savedCode");
+
     editor.dispatch({
       changes: {
         from: 0,
         to: editor.state.doc.length,
-        insert: full_algo_string,
-      },
+        insert: full_algo_string
+      }
     });
-  }
-  else {
+  } else {
     updateSearchControls(algo_name);
+
     const algo_code = globalThis.read_algo(algo_name);
-    const full_algo_string = buildLoadedAlgorithmCode(algo_name, algo_code);
+    const full_algo_string = buildLoadedAlgorithmCode(
+      algo_name,
+      algo_code
+    );
+
     editor.dispatch({
       changes: {
         from: 0,
         to: editor.state.doc.length,
-        insert: full_algo_string,
-      },
+        insert: full_algo_string
+      }
     });
   }
-  logOutput(`Loaded ${selectBtn.options[selectBtn.selectedIndex].text}.`, false);
+
+  logOutput(
+    `Loaded ${selectBtn.options[selectBtn.selectedIndex].text}.`,
+    false
+  );
 });
 
 playBtn.addEventListener("click", async () => {
-  if (isRunning) { return; }
+  if (isRunning) {
+    return;
+  }
 
   const code = editor.state.doc.toString();
+
   if (selectBtn.value === "default_algo") {
     localStorage.setItem("savedCode", code);
   }
 
-  if (code.trim() && !/async\s+def\s+(algorithm|sort)\s*\(/.test(code)) {
+  if (
+    code.trim() &&
+    !/async\s+def\s+(algorithm|sort)\s*\(/.test(code)
+  ) {
     logOutput(
       "Custom code must define async def algorithm(arr) (or async def sort(arr)) and use await arr.step(...) so Pause/Stop can interrupt.",
       true
@@ -167,6 +199,7 @@ playBtn.addEventListener("click", async () => {
   }
 
   let optval;
+
   try {
     optval = parseSearchTarget();
   } catch (err) {
@@ -174,18 +207,36 @@ playBtn.addEventListener("click", async () => {
     return;
   }
 
-  if (optval === null) { optval = currentArray[currentArray.length - 1]; } // Force index if none is inputted
-  window.updateDisplay({ array: currentArray, highlighted_indices: {}, side_elements: [] });
+  if (optval === null) {
+    optval = currentArray[currentArray.length - 1];
+  }
+
+  window.updateDisplay({
+    array: currentArray,
+    highlighted_indices: {},
+    side_elements: []
+  });
 
   if (typeof window.triggerStepper !== "function") {
-    logOutput("Python runtime is still loading. Try again in a moment.", true);
+    logOutput(
+      "Python runtime is still loading. Try again in a moment.",
+      true
+    );
     return;
   }
 
   setRunState({ running: true, paused: false });
   logOutput("Running algorithm...");
+
   try {
-    await window.triggerStepper(currentArray, optval, code, SAFETY_MAX_SECONDS, SAFETY_MAX_STEPS);
+    await window.triggerStepper(
+      currentArray,
+      optval,
+      code,
+      SAFETY_MAX_SECONDS,
+      SAFETY_MAX_STEPS
+    );
+
     logOutput("Run completed successfully.");
   } finally {
     setRunState({ running: false, paused: false });
@@ -193,7 +244,10 @@ playBtn.addEventListener("click", async () => {
 });
 
 pauseBtn.addEventListener("click", () => {
-  if (!isRunning || isPaused) { return; }
+  if (!isRunning || isPaused) {
+    return;
+  }
+
   if (typeof window.pauseStepper === "function") {
     window.pauseStepper();
     setRunState({ running: true, paused: true });
@@ -202,7 +256,10 @@ pauseBtn.addEventListener("click", () => {
 });
 
 resumeBtn.addEventListener("click", () => {
-  if (!isRunning || !isPaused) { return; }
+  if (!isRunning || !isPaused) {
+    return;
+  }
+
   if (typeof window.resumeStepper === "function") {
     window.resumeStepper();
     setRunState({ running: true, paused: false });
@@ -211,12 +268,68 @@ resumeBtn.addEventListener("click", () => {
 });
 
 stopBtn.addEventListener("click", () => {
-  if (!isRunning) { return; }
+  if (!isRunning) {
+    return;
+  }
+
   if (typeof window.stopStepper === "function") {
     window.stopStepper();
     setRunState({ running: true, paused: false });
     logOutput("Stopping run...");
   }
+});
+
+generateBtn.addEventListener("click", async () => {
+  console.log("Generate clicked");
+
+  const prompt = window.prompt("Enter algorithm:");
+  if (!prompt) {
+    return;
+  }
+
+  console.log("Sending request...");
+
+  const response = await fetch("http://localhost:3001/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ prompt })
+  });
+
+  console.log("Response status:", response.status);
+
+  const data = await response.json();
+  console.log("FULL DATA:", data);
+
+  if (!response.ok) {
+    console.error("AI ERROR:", data);
+
+    logOutput(
+      data.details || "AI failed to generate valid code",
+      true
+    );
+    return;
+  }
+
+  const code = data.code;
+  console.log("EXTRACTED CODE:", code);
+
+  if (!code) {
+    logOutput("No code returned from AI", true);
+    return;
+  }
+
+  editor.dispatch({
+    changes: {
+      from: 0,
+      to: editor.state.doc.length,
+      insert: code
+    }
+  });
+
+  console.log("Editor updated");
+  logOutput("AI code generated successfully!");
 });
 
 function syncControlButtons() {
@@ -236,8 +349,16 @@ function setRunState({ running, paused }) {
 syncControlButtons();
 
 function syncSearchTargetToArray() {
-  if (!isSearchAlgorithm(selectBtn.value)) { return; }
-  if (!trackingCheckbox.checked && searchInput.value.trim() !== "") { return; }
+  if (!isSearchAlgorithm(selectBtn.value)) {
+    return;
+  }
+
+  if (
+    !trackingCheckbox.checked &&
+    searchInput.value.trim() !== ""
+  ) {
+    return;
+  }
 
   const values = parseArrayInput(arrayInput.value);
   const target = values[Math.floor(values.length / 2)];

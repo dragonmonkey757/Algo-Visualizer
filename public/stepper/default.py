@@ -1,5 +1,5 @@
 from stepper import ArrayMonitor
-from runcont import CONTROL
+from runcont import CONTROL, StepperLimitError
 import asyncio
 import js
 
@@ -29,20 +29,22 @@ async def run_user_algorithm(arr, user_code, max_seconds):
 
     algorithm = namespace.get("algorithm") or namespace.get("sort")
     if not callable(algorithm):
-        raise ValueError("Define a function named 'algorithm(arr)' in the editor.")
+        raise ValueError(
+            "Define a function named 'algorithm(arr)' or 'sort(arr)' in the editor."
+        )
 
     result = algorithm(arr)
     if not asyncio.iscoroutine(result):
         raise ValueError(
             "Custom algorithms must be async. "
-            "Use 'async def algorithm(arr):' in loops."
+            "Use 'async def algorithm(arr):' and 'await arr.step(...)' in loops."
         )
 
     timeout = max(0.25, float(max_seconds))
     try:
         await asyncio.wait_for(result, timeout=timeout)
-    except Exception as e:
-        print(f"Error during algorithm execution: {e}")
+    except asyncio.TimeoutError as exc:
+        raise StepperLimitError(f"Execution timed out after {timeout:.1f}s.") from exc
 
     arr.highlighted_indices.clear()
     arr.side_elements = []
